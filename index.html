@@ -3,687 +3,1512 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Link Star — एकीकृत कार्यालय प्रणाली</title>
+<title>Link Star Manpower - श्रम स्वीकृति व्यवस्थापन प्रणाली</title>
 <style>
-  :root{
-    --brand:#1f4e79; --brand-2:#2e6da4; --plum:#8a2b5e; --gold:#c8942b;
-    --ink:#14233d; --muted:#6b7a90; --line:#e3e0d8; --paper:#f5f3 ee;
-    --paper:#f5f3ee; --card:#fff; --ok:#2f8f5b; --warn:#c77d1a; --danger:#c0392b;
-    --shadow:0 8px 24px -14px rgba(20,35,61,.3);
-  }
-  *{margin:0;padding:0;box-sizing:border-box;}
-  body{font-family:'Segoe UI','Kalimati','Noto Sans Devanagari',sans-serif; background:var(--paper); color:var(--ink);}
-  .hidden{display:none !important;}
-
-  /* Login */
-  #login{min-height:100vh; display:grid; place-items:center; padding:20px;
-    background:radial-gradient(1000px 400px at 80% -10%, rgba(31,78,121,.12),transparent 60%), var(--paper);}
-  .login-card{background:var(--card); border:1px solid var(--line); border-radius:18px; box-shadow:var(--shadow);
-    padding:34px 30px; width:100%; max-width:390px;}
-  .login-card .seal{width:56px;height:56px;border-radius:14px;background:linear-gradient(150deg,var(--brand),var(--brand-2));
-    color:#fff;display:grid;place-items:center;font-size:26px;font-weight:800;margin-bottom:16px;}
-  .login-card h1{font-size:20px;} .login-card .sub{font-size:13px;color:var(--muted);margin:4px 0 20px;}
-
-  label{display:block;font-size:13px;font-weight:600;margin:0 0 5px;}
-  .inp{width:100%;box-sizing:border-box;padding:10px 12px;border:1px solid var(--line);border-radius:8px;font-size:14px;margin-bottom:14px;}
-  .inp:focus{outline:2px solid var(--brand-2);border-color:transparent;}
-  .btn{background:var(--brand);color:#fff;border:none;border-radius:8px;padding:11px 18px;font-size:14px;font-weight:700;cursor:pointer;}
-  .btn:hover{background:var(--brand-2);}
-  .btn-sm{padding:6px 12px;font-size:13px;}
-  .btn-ghost{background:#eef2f7;color:var(--brand);}
-  .btn-plum{background:var(--plum);}
-  .btn-gold{background:var(--gold);}
-
-  /* App shell */
-  header.top{background:linear-gradient(135deg,#12213b,var(--brand));color:#fff;padding:16px 22px;
-    display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;}
-  header .brand{display:flex;align-items:center;gap:12px;}
-  header .seal{width:42px;height:42px;border-radius:11px;background:rgba(255,255,255,.15);display:grid;place-items:center;font-size:20px;font-weight:800;}
-  header h1{font-size:18px;line-height:1.15;}
-  header .lic{font-size:11px;color:#cbd5e1;}
-  header .who{font-size:13px;text-align:right;}
-  header .who b{display:block;font-size:14px;}
-  header .who .role{font-size:11px;color:#cbd5e1;text-transform:uppercase;letter-spacing:.08em;}
-
-  .tabs{display:flex;gap:8px;padding:12px 22px 0;flex-wrap:wrap;background:var(--paper);}
-  .tab{padding:10px 18px;font-size:14px;font-weight:700;background:#e7e3da;border:none;border-radius:9px 9px 0 0;cursor:pointer;color:var(--ink);}
-  .tab.active{background:var(--card);color:var(--brand);box-shadow:0 -2px 0 var(--brand) inset;}
-
-  main{padding:18px 22px 40px;}
-  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);padding:20px;margin-bottom:18px;}
-  .card h2{font-size:16px;margin-bottom:14px;}
-
-  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
-  .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
-  .fg{margin-bottom:12px;min-width:0;}
-
-  /* Dashboard cards */
-  .dash{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-bottom:8px;}
-  .stat{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;box-shadow:var(--shadow);}
-  .stat .n{font-size:22px;font-weight:800;} .stat .l{font-size:11px;color:var(--muted);margin-top:2px;font-weight:600;}
-
-  table{width:100%;border-collapse:collapse;font-size:13px;}
-  th{background:#f0f4f8;text-align:left;padding:9px;border-bottom:2px solid var(--line);font-size:12px;color:var(--muted);}
-  td{padding:9px;border-bottom:1px solid var(--line);}
-  tr:hover td{background:#fafcff;}
-  .pill{font-size:11px;font-weight:700;padding:3px 9px;border-radius:999px;background:#eef2f7;color:var(--brand);}
-  .search{width:100%;box-sizing:border-box;padding:10px 14px;border:2px solid var(--brand);border-radius:8px;background:#eff6ff;font-size:14px;margin-bottom:14px;}
-
-  /* Stage stepper */
-  .steps{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0;}
-  .step{font-size:11px;padding:5px 10px;border-radius:999px;background:#eef2f7;color:var(--muted);font-weight:600;}
-  .step.done{background:#dcfce7;color:#166534;}
-  .step.now{background:var(--brand);color:#fff;}
-
-  .modal{display:none;position:fixed;inset:0;background:rgba(20,35,61,.45);z-index:100;place-items:center;padding:20px;}
-  .modal.show{display:grid;}
-  .modal-box{background:#fff;border-radius:16px;max-width:720px;width:100%;max-height:92vh;overflow:auto;padding:24px;}
-  .modal-box h3{font-size:18px;margin-bottom:14px;}
-  .row-actions{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap;}
-
-  .note{font-size:12px;color:var(--muted);}
-  .demo-flag{background:#12213b;color:#fff;text-align:center;font-size:11px;letter-spacing:.12em;padding:5px;text-transform:uppercase;}
-  @media(max-width:820px){.grid2,.grid3{grid-template-columns:1fr;}.dash{grid-template-columns:1fr 1fr 1fr;}}
+:root{
+  --primary:#1e3a8a; --primary-dark:#172554; --secondary:#0f172a;
+  --bg:#f8fafc; --card:#ffffff; --text:#334155; --muted:#64748b;
+  --border:#e2e8f0; --success:#16a34a; --danger:#dc2626; --warning:#d97706; --info:#0284c7;
+}
+*{box-sizing:border-box;margin:0;padding:0;font-family:'Segoe UI',Tahoma,sans-serif;}
+body{background:var(--bg);color:var(--text);padding:20px;line-height:1.6;}
+.container{max-width:1400px;margin:0 auto;}
+header{background:linear-gradient(135deg,#172554,#1e3a8a);color:#fff;padding:25px;border-radius:12px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;}
+header h1{font-size:25px;margin-bottom:4px;}
+header p{color:#bfdbfe;font-size:14px;}
+.header-actions{display:flex;gap:8px;flex-wrap:wrap;}
+.header-actions button{padding:8px 14px;font-size:13px;font-weight:600;border:none;border-radius:6px;cursor:pointer;background:rgba(255,255,255,.15);color:#fff;}
+.header-actions button:hover{background:rgba(255,255,255,.3);}
+.fy-bar{background:#fff7ed;border:2px solid var(--warning);border-radius:10px;padding:12px 18px;margin-bottom:20px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+.fy-bar label{font-weight:700;font-size:15px;}
+.fy-bar select{padding:8px 14px;font-size:15px;font-weight:700;border:2px solid var(--warning);border-radius:6px;background:#fff;}
+.fy-bar .range{font-size:13px;color:var(--muted);}
+.dashboard-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:15px;margin-bottom:22px;}
+.stat-card{background:var(--card);padding:18px;border-radius:10px;border:1px solid var(--border);border-top:4px solid var(--primary);}
+.stat-card h3{font-size:12px;color:var(--muted);margin-bottom:6px;text-transform:uppercase;}
+.stat-card .value{font-size:24px;font-weight:700;color:var(--secondary);}
+.stat-card .sub{font-size:12px;color:var(--muted);margin-top:4px;}
+.stat-card.c-pre{border-top-color:#7c2d12;} .stat-card.c-pre .value{color:#7c2d12;}
+.stat-card.c-app{border-top-color:var(--success);} .stat-card.c-app .value{color:var(--success);}
+.stat-card.c-fly{border-top-color:var(--info);} .stat-card.c-fly .value{color:var(--info);}
+.stat-card.c-rem{border-top-color:var(--warning);} .stat-card.c-rem .value{color:var(--warning);}
+.stat-card.c-can{border-top-color:var(--danger);} .stat-card.c-can .value{color:var(--danger);}
+.clickable-card{cursor:pointer;transition:transform .1s,box-shadow .1s;}
+.clickable-card:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,.12);}
+.clickable-card.card-active{box-shadow:0 0 0 3px var(--primary);}
+.card-filter-banner{background:#eff6ff;border:1px solid var(--primary);border-radius:8px;padding:10px 16px;margin-bottom:12px;display:none;align-items:center;justify-content:space-between;font-size:14px;}
+.card-filter-banner.show{display:flex;}
+.card-filter-banner b{color:var(--primary);}
+.card-filter-banner button{background:var(--danger);color:#fff;border:none;border-radius:5px;padding:5px 12px;font-size:12px;font-weight:600;cursor:pointer;}
+.tab-navigation{display:flex;gap:10px;margin-bottom:20px;border-bottom:3px solid var(--border);padding-bottom:10px;flex-wrap:wrap;}
+.tab-btn{padding:11px 22px;font-size:15px;font-weight:700;background:#e2e8f0;border:none;border-radius:6px;cursor:pointer;color:var(--text);}
+.tab-btn.active{background:var(--primary);color:#fff;}
+.tab-content{display:none;} .tab-content.active{display:block;}
+.main-grid{display:grid;grid-template-columns:1fr;gap:22px;}
+@media(min-width:1024px){.main-grid{grid-template-columns:370px 1fr;}}
+.card{background:var(--card);border-radius:10px;border:1px solid var(--border);padding:20px;margin-bottom:20px;}
+.card-title{font-size:17px;font-weight:600;margin-bottom:15px;color:var(--secondary);border-bottom:2px solid var(--border);padding-bottom:8px;}
+.search-control{width:100%;box-sizing:border-box;padding:10px 14px;border:2px solid var(--primary);border-radius:6px;font-size:14px;background:#eff6ff;margin-bottom:15px;}
+.form-group{margin-bottom:13px;min-width:0;} .form-group label{display:block;font-size:13px;font-weight:600;margin-bottom:4px;line-height:1.3;min-height:2.2em;}
+.form-control{width:100%;box-sizing:border-box;padding:9px;border:1px solid var(--border);border-radius:6px;font-size:14px;}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.btn{display:inline-block;width:100%;padding:11px;background:var(--primary);color:#fff;border:none;border-radius:6px;font-size:14px;font-weight:600;cursor:pointer;text-align:center;}
+.btn:hover{background:var(--primary-dark);}
+.btn-secondary{background:var(--muted);} .btn-danger{background:var(--danger);}
+.btn-sm{width:auto;padding:6px 12px;font-size:12px;}
+.badge{display:inline-block;padding:3px 8px;font-size:12px;font-weight:600;border-radius:4px;white-space:nowrap;}
+.s-entry{background:#e0e7ff;color:#4338ca;} .s-upload{background:#e0f2fe;color:#0369a1;}
+.s-submitted{background:#fef3c7;color:#b45309;} .s-approved{background:#dcfce7;color:#15803d;}
+.carry-tag{display:inline-block;background:#ede9fe;color:#6d28d9;border:1px solid #c4b5fd;border-radius:4px;padding:1px 6px;font-size:11px;font-weight:600;margin-top:3px;}
+.s-rejected{background:#f3e8ff;color:#7e22ce;} .s-cancel{background:#fee2e2;color:#b91c1c;}
+table{width:100%;border-collapse:collapse;font-size:13.5px;margin-bottom:12px;}
+th{background:#f1f5f9;padding:9px 10px;font-weight:600;border-bottom:2px solid var(--border);text-align:left;}
+td{padding:9px 10px;border-bottom:1px solid var(--border);vertical-align:middle;}
+.modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.4);z-index:1000;justify-content:center;align-items:center;padding:20px;}
+.modal-content{background:#fff;border-radius:12px;max-width:860px;width:100%;max-height:92vh;overflow-y:auto;padding:25px;}
+.modal-header{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border);padding-bottom:12px;margin-bottom:18px;}
+.close-modal{font-size:24px;cursor:pointer;}
+.edit-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));gap:12px;margin-bottom:15px;}
+.history-box{background:#f8fafc;border:1px solid var(--border);padding:12px;border-radius:8px;max-height:160px;overflow-y:auto;font-size:13px;}
+.history-item{padding:5px 0;border-bottom:1px dashed var(--border);}
+#login-screen,#setup-screen{max-width:440px;margin:80px auto;}
+#sync-badge{display:none;position:fixed;bottom:18px;right:18px;background:var(--secondary);color:#fff;padding:8px 16px;border-radius:20px;font-size:12px;font-weight:700;z-index:1500;}
+#loading-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(255,255,255,.6);z-index:2000;justify-content:center;align-items:center;}
+#loading-overlay .spinner{background:var(--secondary);color:#fff;padding:14px 28px;border-radius:30px;font-weight:700;}
+body.role-staff .admin-only{display:none !important;}
+body.role-receptionist .hide-for-receptionist{display:none !important;}
+body.role-receptionist .doc-only-field{display:none !important;}
+.role-tag{font-size:12px;font-weight:600;color:#bfdbfe;margin-right:8px;}
+.exp-warn{color:#b45309;font-weight:700;} .exp-over{color:#b91c1c;font-weight:700;}
+.report-table th{background:#dbeafe;} .report-total{background:#fef3c7;font-weight:700;}
+@media print{.header-actions,.tab-navigation,.card form,.search-control,button{display:none !important;} body{padding:0;}}
 </style>
 </head>
 <body>
 
-<!-- API URL: deploy पछि यहाँ राख्नुहोस् -->
-<script>const FIXED_API_URL = 'https://script.google.com/macros/s/AKfycbzg5wMtJb7DAQYW_62-QrcLUr54FBTmMYDL8ZCR5L1VKZH99WTj8qI2OYfZV6f3dqdrSg/exec';</script>
+<div id="loading-overlay"><div class="spinner">⏳ कृपया पर्खनुहोस्...</div></div>
+<div id="sync-badge">🔄 Sync हुँदैछ...</div>
 
-<!-- ===== LOGIN ===== -->
-<div id="login">
-  <div class="login-card">
-    <div class="seal">★</div>
-    <h1>Link Star — एकीकृत प्रणाली</h1>
-    <div class="sub">Tokha-10, Kathmandu · Lic 1025/068/069</div>
-    <label>प्रयोगकर्ता (Username)</label>
-    <input class="inp" id="lg-user" autocomplete="username">
-    <label>पासवर्ड (Password)</label>
-    <input class="inp" id="lg-pass" type="password" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
-    <button class="btn" style="width:100%" onclick="doLogin()">लगइन गर्नुहोस्</button>
-    <p class="note" id="lg-msg" style="margin-top:12px;color:var(--danger)"></p>
-    <p class="note" style="margin-top:14px">सुरुमा: <b>admin / admin123</b></p>
+<div id="setup-screen" style="display:none;">
+  <div class="card">
+    <div class="card-title">🔗 Server URL सेटअप</div>
+    <p style="font-size:13px;margin-bottom:15px;">Apps Script deploy गरेपछि पाएको <b>Web App URL</b> paste गर्नुहोस्:</p>
+    <div class="form-group"><input type="text" id="setup-url" class="form-control" placeholder="https://script.google.com/macros/s/XXXX/exec"></div>
+    <button class="btn" onclick="saveApiUrl()">सुरक्षित गर्नुहोस्</button>
+    <p id="setup-error" style="color:var(--danger);font-size:13px;margin-top:8px;"></p>
   </div>
 </div>
 
-<!-- ===== APP ===== -->
-<div id="app" class="hidden">
-  <div class="demo-flag">टेस्ट संस्करण — Foundation · Link Star</div>
-  <header class="top">
-    <div class="brand">
-      <div class="seal">★</div>
-      <div>
-        <h1>Link Star Manpower — एकीकृत प्रणाली</h1>
-        <div class="lic">Tokha-10, Kathmandu · Lic 1025/068/069</div>
-      </div>
+<div id="login-screen" style="display:none;">
+  <div class="card">
+    <div class="card-title">🔐 श्रम स्वीकृति System — लगइन</div>
+    <div class="form-group"><label>Username</label><input type="text" id="login-user" class="form-control"></div>
+    <div class="form-group"><label>Password</label><input type="password" id="login-pass" class="form-control" onkeydown="if(event.key==='Enter')doLogin()"></div>
+    <button class="btn" onclick="doLogin()">लगइन गर्नुहोस्</button>
+    <p style="font-size:12px;color:var(--muted);margin-top:10px;">पहिलो पटक: <b>admin</b> / <b>admin123</b></p>
+    <p id="login-error" style="color:var(--danger);font-size:13px;margin-top:8px;"></p>
+    <p style="font-size:12px;margin-top:12px;"><a href="#" onclick="changeApiUrl();return false;" style="color:var(--muted);">🔗 Server URL बदल्ने</a></p>
+  </div>
+</div>
+
+<div class="container" id="main-app" style="display:none;">
+  <header>
+    <div>
+      <h1>Link Star Manpower Services Pvt. Ltd.</h1>
+      <p>Tokha-10, Kathmandu &nbsp;|&nbsp; License No: 1025/068/069 &nbsp;—&nbsp; श्रम स्वीकृति व्यवस्थापन प्रणाली</p>
     </div>
-    <div class="who">
-      <b id="who-name"></b><span class="role" id="who-role"></span>
-      <button class="btn btn-sm btn-ghost" style="margin-top:6px" onclick="logout()">बाहिरिनुहोस्</button>
+    <div class="header-actions">
+      <button onclick="refreshData(true)" title="Refresh">🔄 Refresh</button>
+      <button class="admin-only" onclick="exportBackup()" title="Backup">💾 Backup</button>
+      <button class="hide-for-receptionist" onclick="printAuditorList()" title="Auditor — Monthly/Yearly अभिलेख">🧾 Auditor</button>
+      <button class="hide-for-receptionist" onclick="printAuditReport()" title="Full Report">📊 Full Report</button>
+      <button class="hide-for-receptionist" onclick="printAnusuchi6()" title="अनुसूची ६ — वार्षिक अभिलेख">📋 अनुसूची ६</button>
+      <button class="admin-only" onclick="manageUsers()" title="प्रयोगकर्ता व्यवस्थापन">👥</button>
+      <button onclick="openChangePass()" title="Password बदल्ने">⚙️</button>
+      <span id="who-is-in" class="role-tag"></span>
+      <span id="alert-header-badge" onclick="openAlertsTab()" title="क्लिक गरेर हेर्नुहोस्" style="display:none;background:#dc2626;color:#fff;padding:5px 12px;border-radius:14px;font-size:12px;font-weight:700;cursor:pointer;"></span>
+      <button onclick="logout()" title="Logout">🚪</button>
     </div>
   </header>
 
-  <div class="tabs" id="tabs"></div>
+  <div class="fy-bar">
+    <label>📅 आर्थिक वर्ष:</label>
+    <select id="fy-select" onchange="renderAll()"></select>
+    <span class="range" id="fy-range"></span>
+    <span style="margin-left:auto;font-size:13px;color:var(--muted);">महिना र आ.व. मितिबाट आफै गणना हुन्छ</span>
+  </div>
 
-  <main>
-    <!-- Dashboard -->
-    <section id="tab-dash" class="tabpage">
-      <div class="dash" id="dash-cards"></div>
+  <div class="dashboard-grid">
+    <div class="stat-card c-pre clickable-card" onclick="cardFilter('pre')" title="क्लिक गर्नुहोस् — यसै आ.व.को पूर्व स्वीकृति हेर्न"><h3>Pre-Permission</h3><div class="value" id="d-pre-total">०</div><div class="sub" id="d-pre-sub">M 0 | F 0 | Lot 0</div></div>
+    <div class="stat-card c-app clickable-card" onclick="cardFilter('approved')" title="क्लिक गर्नुहोस् — यसै आ.व. श्रम स्वीकृति लिएका हेर्न"><h3>Final Approval</h3><div class="value" id="d-approved">०</div><div class="sub" id="d-app-sub">M 0 | F 0</div></div>
+    <div class="stat-card c-fly clickable-card" onclick="cardFilter('departed')" title="क्लिक गर्नुहोस् — यसै आ.व. उडेका हेर्न"><h3>✈ Departure</h3><div class="value" id="d-flown">०</div><div class="sub" id="d-flown-sub">This FY 0 | Previous FY 0</div></div>
+    <div class="stat-card c-rem clickable-card" onclick="cardFilter('pending')" title="क्लिक गर्नुहोस् — उड्न बाँकी हेर्न"><h3>⏳ Departure Pending</h3><div class="value" id="d-remaining">०</div><div class="sub" id="d-rem-sub">of 0 approved this FY</div></div>
+    <div class="stat-card c-can clickable-card" onclick="cardFilter('cancel')" title="क्लिक गर्नुहोस् — यसै आ.व.का Cancel हेर्न"><h3>⊘ Cancel</h3><div class="value" id="d-cancel">०</div><div class="sub">&nbsp;</div></div>
+    <div class="stat-card c-can clickable-card" onclick="cardFilter('rejected')" title="क्लिक गर्नुहोस् — यसै आ.व.का Rejected हेर्न"><h3>✗ Rejected</h3><div class="value" id="d-rejected">०</div><div class="sub" id="d-rej-sub">&nbsp;</div></div>
+  </div>
+
+  <div class="tab-navigation">
+    <button class="tab-btn active" onclick="switchTab(event,'tab-workers')">👷 Master Record</button>
+    <button class="tab-btn" id="alert-tab-btn" onclick="switchTab(event,'tab-alerts')">🔔 पूरा गर्नुपर्ने</button>
+    <button class="tab-btn hide-for-receptionist" onclick="switchTab(event,'tab-pre')">📋 Pre-Permission</button>
+    <button class="tab-btn hide-for-receptionist" onclick="switchTab(event,'tab-report')">📊 Report</button>
+    <button class="tab-btn hide-for-receptionist" onclick="switchTab(event,'tab-quota')">🎫 Quota Details</button>
+  </div>
+
+  <!-- TAB 1: WORKERS -->
+  <div id="tab-workers" class="tab-content active">
+    <div class="main-grid">
       <div class="card">
-        <h2>चरण अनुसार कामदार (Pipeline)</h2>
-        <div id="pipeline"></div>
+        <div class="card-title">New Worker Entry</div>
+        <form id="worker-form">
+          <div class="form-group"><label>नाम *</label><input type="text" id="w-name" class="form-control" required></div>
+          <div class="form-row">
+            <div class="form-group"><label>पासपोर्ट *</label><input type="text" id="w-passport" class="form-control" required></div>
+            <div class="form-group"><label>उमेर</label><input type="number" id="w-age" class="form-control" min="18" max="70"></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label>Gender *</label>
+              <select id="w-gender" class="form-control" required><option value="">—</option><option value="Male">Male</option><option value="Female">Female</option></select>
+            </div>
+            <div class="form-group"><label>लट नं</label><input type="text" id="w-lotno" class="form-control"></div>
+          </div>
+          <div class="form-row doc-only-field">
+            <div class="form-group"><label>News Date</label><input type="date" id="w-newsdate" class="form-control"></div>
+            <div class="form-group"><label>Issue Date</label><input type="date" id="w-issuedate" class="form-control"></div>
+          </div>
+          <div class="form-group doc-only-field"><label>भिसा नं</label><input type="text" id="w-visano" class="form-control"></div>
+          <div class="form-row">
+            <div class="form-group"><label>देश *</label><input type="text" id="w-country" class="form-control" required></div>
+            <div class="form-group"><label>कम्पनी *</label><input type="text" id="w-company" class="form-control" required></div>
+          </div>
+          <div class="form-row doc-only-field">
+            <div class="form-group"><label>Visa Profession</label><input type="text" id="w-visaprof" class="form-control"></div>
+            <div class="form-group"><label>Demand Profession</label><input type="text" id="w-demandprof" class="form-control"></div>
+          </div>
+          <div class="form-row doc-only-field">
+            <div class="form-group"><label>Orientation</label><select id="w-orientation" class="form-control"><option value="">—</option><option>Yes</option><option>No</option></select></div>
+            <div class="form-group"><label>Medical</label><select id="w-medical" class="form-control"><option value="">—</option><option>Yes</option><option>No</option></select></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label>नेपालको ठेगाना (जिल्ला)</label><input type="text" id="w-nepal-addr" class="form-control" placeholder="जस्तै: Mahottari"></div>
+            <div class="form-group"><label>नेपालमा सम्पर्क व्यक्तिको नाम, ठेगाना</label><input type="text" id="w-contact-addr" class="form-control"></div>
+          </div>
+          <button type="submit" class="btn">दर्ता गर्नुहोस्</button>
+        </form>
       </div>
-    </section>
-
-    <!-- Candidates -->
-    <section id="tab-cand" class="tabpage hidden">
       <div class="card">
-        <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:6px;">
-          <h2 style="margin:0">कामदार सूची</h2>
-          <button class="btn btn-sm" id="btn-new" onclick="openNew()">➕ नयाँ कामदार</button>
+        <div class="card-title">Worker List</div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+          <input type="text" id="w-search" class="search-control" style="flex:1;min-width:220px;" placeholder="🔍 नाम, पासपोर्ट, देश, कम्पनी, भिसा नं, लट नं..." oninput="onManualFilter()">
+          <select id="w-status-filter" class="form-control" style="width:auto;min-width:160px;margin-bottom:15px;font-weight:600;" onchange="onManualFilter()"></select>
         </div>
-        <input class="search" id="cand-search" placeholder="🔍 नाम, पासपोर्ट, देश, PRO, कम्पनी..." oninput="renderCand()">
-        <label style="display:flex;align-items:center;gap:7px;font-size:13px;font-weight:600;margin-bottom:12px;">
-          <input type="checkbox" id="cand-mine" onchange="renderCand()"> मेरो पालो (queue) मा भएका मात्र देखाउनुहोस्
-        </label>
-        <div id="bulk-bar" class="card hidden" style="background:#fff7ed;border-color:#fdba74;padding:10px 14px;margin-bottom:12px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
-          <b id="bulk-count" style="color:var(--warn)"></b>
-          <select class="inp" id="bulk-stage" style="width:220px;margin:0;"></select>
-          <button class="btn btn-sm" onclick="applyBulkStage()">✅ सबैमा लागू गर्नुहोस्</button>
-          <button class="btn btn-sm btn-ghost" onclick="clearBulkSelection()">रद्द</button>
+        <div class="card-filter-banner" id="card-filter-banner">
+          <span id="card-filter-label"></span>
+          <button onclick="clearCardFilter()">✕ हटाउनुहोस् (सबै हेर्न)</button>
         </div>
-        <div style="overflow:auto">
-          <table>
-            <thead><tr>
-              <th style="width:30px;"><input type="checkbox" id="cand-select-all" onchange="toggleSelectAll(this)"></th>
-              <th>नाम (Passport)</th><th>PRO / स्रोत</th><th>देश / कम्पनी</th>
-              <th>चरण (Stage)</th><th>हाल जिम्मामा</th><th id="th-money">हिसाब</th><th></th>
-            </tr></thead>
-            <tbody id="cand-body"></tbody>
-          </table>
+        <div id="bulk-bar" style="display:none;background:#eff6ff;border:2px solid var(--primary);border-radius:8px;padding:10px 14px;margin-bottom:12px;align-items:center;gap:10px;flex-wrap:wrap;">
+          <b id="bulk-count">0 जना छानिए</b>
+          <label style="font-size:13px;font-weight:600;">नयाँ Status:</label>
+          <select id="bulk-status" class="form-control" style="width:auto;" onchange="onBulkStatusChange()"></select>
+          <label style="font-size:13px;font-weight:600;">स्वीकृति मिति:</label>
+          <input type="date" id="bulk-approvedate" class="form-control" style="width:auto;">
+          <button class="btn btn-sm" style="width:auto;background:var(--success);" onclick="applyBulkUpdate()">✅ लागू गर्नुहोस्</button>
+          <button class="btn btn-sm btn-secondary" style="width:auto;" onclick="clearSelection()">✕ छानिएका हटाउने</button>
+        </div>
+        <p style="font-size:12px;color:var(--muted);margin:-6px 0 10px;">💡 धेरै कामदार एकैचोटि छानेर (जस्तै: खोजमा लट नं. लेखेर एउटै लटका सबै देखाउनुहोस्, अनि सबै छान्नुहोस् टिक गर्नुहोस्) माथिको Status/स्वीकृति मिति एकैचोटि लागू गर्न सकिन्छ।</p>
+        <div style="overflow-x:auto;">
+          <table><thead><tr><th style="width:26px;"><input type="checkbox" id="w-select-all" onchange="toggleSelectAllVisible(this.checked)" title="देखिएका सबै छान्ने/हटाउने"></th><th>Name (Passport)</th><th>Country / Company</th><th>Job Title</th><th>Status</th><th>Approval Date</th><th>Departure Date</th><th></th></tr></thead>
+          <tbody id="w-table"></tbody></table>
         </div>
       </div>
-    </section>
+    </div>
+  </div>
 
-    <!-- Accounts -->
-    <section id="tab-acc" class="tabpage hidden">
+  <!-- TAB ALERTS: पूरा गर्नुपर्ने (Action Needed) -->
+  <div id="tab-alerts" class="tab-content">
+    <div class="card">
+      <div class="card-title">🔔 थप विवरण पूरा गर्नुपर्ने कामदार</div>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:12px;">श्रम स्वीकृति (Approved) भइसकेका तर उडानअघि भर्नुपर्ने विवरण बाँकी भएका कामदारहरू — Receptionist लाई नेपालको ठेगाना/सम्पर्क व्यक्ति, Documentation लाई उडान/विदेश पुगेको मिति बाँकी भएकाहरू यहाँ देखिन्छन्।</p>
+      <div id="alert-area"></div>
+    </div>
+  </div>
+
+  <!-- TAB 2: PRE-APPROVAL -->
+  <div id="tab-pre" class="tab-content">
+    <div class="main-grid">
       <div class="card">
-        <h2>हिसाब-किताब</h2>
-        <input class="search" id="acc-search" placeholder="🔍 नाम वा पासपोर्ट..." oninput="renderAcc()">
-        <div style="overflow:auto">
-          <table>
-            <thead><tr><th>नाम (Passport)</th><th>देश</th><th>कुल रकम</th><th>प्राप्त</th><th>बाँकी</th><th></th></tr></thead>
-            <tbody id="acc-body"></tbody>
-          </table>
-        </div>
-      </div>
-    </section>
+        <div class="card-title">नयाँ पूर्व स्वीकृति इन्ट्री</div>
+        <form id="pre-form">
+          <div class="form-group"><label>स्वीकृति मिति *</label><input type="date" id="p-date" class="form-control" required></div>
+          <div class="form-group"><label>लट नं</label><input type="text" id="p-lotno" class="form-control"></div>
+          <div class="form-row">
+            <div class="form-group"><label>देश *</label><input type="text" id="p-country" class="form-control" required></div>
+            <div class="form-group"><label>कम्पनी *</label><input type="text" id="p-company" class="form-control" required></div>
+          </div>
 
-    <!-- Users -->
-    <section id="tab-users" class="tabpage hidden">
+          <label style="font-weight:700;display:block;margin:6px 0 4px;">पदहरू (माग विवरण)</label>
+          <div id="p-positions"></div>
+          <button type="button" class="btn btn-sm" style="background:#0284c7;margin-bottom:8px;" onclick="addPositionRow()">➕ अर्को पद थप्नुहोस्</button>
+
+          <div class="form-row" style="background:#f1f5f9;padding:8px;border-radius:6px;">
+            <div class="form-group" style="margin:0;"><label>जम्मा माग: पुरुष</label><input type="number" id="p-male" class="form-control" readonly style="background:#e2e8f0;font-weight:700;" value="0"></div>
+            <div class="form-group" style="margin:0;"><label>जम्मा माग: महिला</label><input type="number" id="p-female" class="form-control" readonly style="background:#e2e8f0;font-weight:700;" value="0"></div>
+          </div>
+
+          <div class="form-row" style="margin-top:8px;">
+            <div class="form-group"><label>Expiry मिति</label><input type="date" id="p-expiry" class="form-control"></div>
+            <div class="form-group"><label>करार अवधि (वर्ष)</label><input type="text" id="p-contract-years" class="form-control" value="2"></div>
+          </div>
+          <div class="form-group"><label>लागत खर्च</label><input type="text" id="p-cost" class="form-control" placeholder="रकम वा 0"></div>
+          <div class="form-group"><label>कैफियत</label><input type="text" id="p-remarks" class="form-control"></div>
+          <button type="submit" class="btn">दर्ता गर्नुहोस्</button>
+        </form>
+      </div>
       <div class="card">
-        <h2>प्रयोगकर्ता व्यवस्थापन</h2>
-        <div id="users-list" class="note" style="margin-bottom:14px"></div>
-        <div class="grid3">
-          <div class="fg"><label>Username</label><input class="inp" id="nu-user"></div>
-          <div class="fg"><label>Password</label><input class="inp" id="nu-pass"></div>
-          <div class="fg"><label>भूमिका</label>
-            <select class="inp" id="nu-role">
-              <option value="reception">reception</option>
-              <option value="documentation">documentation</option>
-              <option value="shram">shram</option>
-              <option value="accounts">accounts</option>
-              <option value="pro">pro</option>
-              <option value="admin">admin</option>
-            </select></div>
-          <div class="fg"><label>पूरा नाम</label><input class="inp" id="nu-name"></div>
-          <div class="fg"><label>PRO नाम (pro भए मात्र — referredBy सँग मिल्ने)</label><input class="inp" id="nu-pro"></div>
+        <div class="card-title">पूर्व स्वीकृति सूची</div>
+        <input type="text" id="p-search" class="search-control" placeholder="🔍 देश, कम्पनी वा लट नंबाट खोज्नुहोस्..." oninput="onPreManualSearch()">
+        <div class="card-filter-banner" id="pre-filter-banner">
+          <span id="pre-filter-label"></span>
+          <button onclick="clearPreFilter()">✕ हटाउनुहोस् (सबै हेर्न)</button>
         </div>
-        <button class="btn btn-sm" onclick="addUser()">➕ थप्नुहोस्</button>
-      </div>
-    </section>
-  </main>
-</div>
-
-<!-- ===== CANDIDATE MODAL ===== -->
-<div class="modal" id="modal">
-  <div class="modal-box">
-    <h3 id="m-title">नयाँ कामदार</h3>
-    <div id="m-owner-badge" class="note" style="margin-bottom:8px;"></div>
-    <div class="steps" id="m-steps"></div>
-    <div class="grid3">
-      <div class="fg"><label>पासपोर्ट नं *</label><input class="inp" id="m-passport"></div>
-      <div class="fg"><label>नाम *</label><input class="inp" id="m-name"></div>
-      <div class="fg"><label>उमेर</label><input class="inp" id="m-age"></div>
-      <div class="fg"><label>लिङ्ग</label><select class="inp" id="m-gender"><option>Male</option><option>Female</option></select></div>
-      <div class="fg"><label>फोन</label><input class="inp" id="m-phone"></div>
-      <div class="fg"><label>स्रोत</label><select class="inp" id="m-source"><option>PRO</option><option>Direct</option></select></div>
-      <div class="fg"><label>PRO / रेफर गर्ने</label><input class="inp" id="m-referredby"></div>
-      <div class="fg"><label>देश</label><input class="inp" id="m-country"></div>
-      <div class="fg"><label>कम्पनी</label><input class="inp" id="m-company"></div>
-      <div class="fg"><label>लट नं</label><input class="inp" id="m-lotno"></div>
-      <div class="fg"><label>पद (Profession)</label><input class="inp" id="m-profession"></div>
-      <div class="fg"><label>चरण (Stage)</label><select class="inp" id="m-stage"></select></div>
-    </div>
-    <div class="grid3" id="doc-fields">
-      <div class="fg"><label>Medical</label><select class="inp" id="m-medical"><option value="">—</option><option>Yes</option><option>No</option></select></div>
-      <div class="fg"><label>Orientation</label><select class="inp" id="m-orientation"><option value="">—</option><option>Yes</option><option>No</option></select></div>
-      <div class="fg"><label>Visa नं</label><input class="inp" id="m-visano"></div>
-    </div>
-    <div class="grid3" id="money-fields">
-      <div class="fg"><label>कुल रकम</label><input class="inp" id="m-total"></div>
-      <div class="fg"><label>प्राप्त</label><input class="inp" id="m-received"></div>
-      <div class="fg"><label>भुक्तानी</label><input class="inp" id="m-paid"></div>
-    </div>
-    <div class="fg"><label>कैफियत</label><input class="inp" id="m-remarks"></div>
-
-    <div class="card" id="docs-box" style="background:#f8fafc;margin:14px 0;padding:14px;">
-      <label>📎 कागजात (Documents)</label>
-      <div id="doc-buttons" style="display:flex;flex-wrap:wrap;gap:8px;margin:8px 0;"></div>
-      <div id="doc-list" class="note"></div>
-    </div>
-
-    <div class="card" id="hist-box" style="background:#f8fafc;margin:14px 0;padding:14px;">
-      <label>📜 यात्रा (History)</label>
-      <div id="hist-list" class="note" style="margin-top:8px;max-height:180px;overflow:auto;"></div>
-    </div>
-
-    <div class="card" id="fwd-box" style="background:#f8fafc;margin:14px 0;padding:14px;">
-      <label>➡️ अर्को विभागलाई पठाउने (Forward)</label>
-      <div style="display:flex;gap:8px;flex-wrap:wrap;">
-        <select class="inp" id="fwd-dept" style="flex:1;min-width:160px;margin-bottom:0;"></select>
-        <button class="btn btn-plum btn-sm" onclick="doForward()">पठाउनुहोस्</button>
+        <div style="overflow-x:auto;">
+          <table><thead><tr><th>Date</th><th>Lot No</th><th>Country</th><th>Company</th><th>M</th><th>F</th><th>Total</th><th>Available</th><th>Expiry</th><th></th></tr></thead>
+          <tbody id="p-table"></tbody></table>
+        </div>
       </div>
     </div>
-    <div class="row-actions">
-      <button class="btn" onclick="saveCand()">💾 सुरक्षित गर्नुहोस्</button>
-      <button class="btn btn-ghost" onclick="closeModal()">रद्द</button>
-      <button class="btn" style="background:var(--danger)" id="btn-reject" onclick="doReject()">❌ Reject गर्नुहोस्</button>
+  </div>
+
+  <!-- TAB 3: REPORT -->
+  <div id="tab-report" class="tab-content">
+    <div class="card">
+      <div class="card-title">📊 Report (आ.व. <span id="rpt-fy"></span>)</div>
+      <div id="report-area"></div>
+    </div>
+  </div>
+
+  <div id="tab-quota" class="tab-content">
+    <div class="card">
+      <div class="card-title">🎫 Quota Details — लट अनुसार कोटा विवरण (म्याद नसकिएका)</div>
+      <div id="quota-area"></div>
     </div>
   </div>
 </div>
-<input type="file" id="doc-file-input" class="hidden">
+
+<!-- WORKER MODAL -->
+<div class="modal" id="w-modal">
+  <div class="modal-content">
+    <div class="modal-header"><h2 id="w-modal-title">कामदार विवरण</h2><span class="close-modal" onclick="closeWModal()">&times;</span></div>
+    <div class="edit-grid">
+      <div class="form-group"><label>नाम</label><input type="text" id="e-name" class="form-control"></div>
+      <div class="form-group"><label>पासपोर्ट</label><input type="text" id="e-passport" class="form-control"></div>
+      <div class="form-group"><label>उमेर</label><input type="number" id="e-age" class="form-control"></div>
+      <div class="form-group"><label>Gender</label><select id="e-gender" class="form-control"><option value="">—</option><option value="Male">Male</option><option value="Female">Female</option></select></div>
+      <div class="form-group"><label>लट नं</label><input type="text" id="e-lotno" class="form-control"></div>
+      <div class="form-group"><label>News Date</label><input type="date" id="e-newsdate" class="form-control"></div>
+      <div class="form-group"><label>Issue Date</label><input type="date" id="e-issuedate" class="form-control"></div>
+      <div class="form-group"><label>भिसा नं</label><input type="text" id="e-visano" class="form-control"></div>
+      <div class="form-group"><label>देश</label><input type="text" id="e-country" class="form-control"></div>
+      <div class="form-group"><label>कम्पनी</label><input type="text" id="e-company" class="form-control"></div>
+      <div class="form-group"><label>Visa Profession</label><input type="text" id="e-visaprof" class="form-control"></div>
+      <div class="form-group"><label>Demand Profession</label><input type="text" id="e-demandprof" class="form-control"></div>
+      <div class="form-group"><label>Orientation</label><select id="e-orientation" class="form-control"><option value="">—</option><option>Yes</option><option>No</option></select></div>
+      <div class="form-group"><label>Medical</label><select id="e-medical" class="form-control"><option value="">—</option><option>Yes</option><option>No</option></select></div>
+      <div class="form-group"><label>⚙️ Labor Approval Status</label>
+        <select id="e-status" class="form-control" style="font-weight:700;" onchange="onStatusChange()">
+          <option value="Entry">Entry (दर्ता मात्र)</option>
+          <option value="Upload">Upload (FEIMS मा)</option>
+          <option value="Submitted">Submitted (पेश गरिएको)</option>
+          <option value="Approved">Approved (श्रम स्वीकृति)</option>
+          <option value="Rejected">Rejected</option>
+          <option value="Cancel">Cancel</option>
+        </select>
+      </div>
+      <div class="form-group"><label>स्वीकृति मिति (Approve Date)</label><input type="date" id="e-approvedate" class="form-control"></div>
+      <div class="form-row">
+        <div class="form-group"><label>उडान/टिकट मिति (Departure)</label><input type="date" id="e-departdate" class="form-control"></div>
+        <div class="form-group"><label>विदेश पुगेको मिति</label><input type="date" id="e-arriveddate" class="form-control"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>नेपालको ठेगाना (जिल्ला)</label><input type="text" id="e-nepal-addr" class="form-control"></div>
+        <div class="form-group"><label>नेपालमा सम्पर्क व्यक्तिको नाम, ठेगाना</label><input type="text" id="e-contact-addr" class="form-control"></div>
+      </div>
+      <div class="form-group"><label>कैफियत</label><input type="text" id="e-remarks" class="form-control"></div>
+    </div>
+    <div id="w-modal-meta" style="font-size:13px;color:var(--muted);margin-bottom:12px;"></div>
+    <div style="display:flex;gap:10px;margin-bottom:18px;flex-wrap:wrap;">
+      <button class="btn" style="width:auto;background:var(--success);" onclick="saveWorker()">💾 सुरक्षित गर्नुहोस्</button>
+      <button class="btn btn-sm btn-secondary" style="width:auto;" onclick="printWorker()">🖨️ Print</button>
+      <button class="btn btn-danger admin-only" style="width:auto;" onclick="deleteWorker()">🗑️ मेटाउनुहोस्</button>
+    </div>
+    <div class="card-title" style="font-size:15px;">📜 History</div>
+    <div class="history-box" id="w-history"></div>
+  </div>
+</div>
+
+<!-- PRE MODAL -->
+<div class="modal" id="p-modal">
+  <div class="modal-content" style="max-width:640px;">
+    <div class="modal-header"><h2>पूर्व स्वीकृति संशोधन</h2><span class="close-modal" onclick="closePModal()">&times;</span></div>
+    <div class="edit-grid">
+      <div class="form-group"><label>स्वीकृति मिति</label><input type="date" id="pe-date" class="form-control"></div>
+      <div class="form-group"><label>लट नं</label><input type="text" id="pe-lotno" class="form-control"></div>
+      <div class="form-group"><label>देश</label><input type="text" id="pe-country" class="form-control"></div>
+      <div class="form-group"><label>कम्पनी</label><input type="text" id="pe-company" class="form-control"></div>
+      <div class="form-group"><label>माग: पुरुष</label><input type="number" id="pe-male" class="form-control" min="0"></div>
+      <div class="form-group"><label>माग: महिला</label><input type="number" id="pe-female" class="form-control" min="0"></div>
+      <div class="form-group"><label>Expiry</label><input type="date" id="pe-expiry" class="form-control"></div>
+      <div class="form-group"><label>लागत खर्च</label><input type="text" id="pe-cost" class="form-control" placeholder="रकम वा 0"></div>
+      <div class="form-group"><label>कैफियत</label><input type="text" id="pe-remarks" class="form-control"></div>
+    </div>
+    <div style="display:flex;gap:10px;">
+      <button class="btn" style="background:var(--success);" onclick="savePre()">💾 सुरक्षित</button>
+      <button class="btn btn-danger admin-only" onclick="deletePre()">🗑️ मेटाउने</button>
+    </div>
+  </div>
+</div>
 
 <script>
-// ============ राज्य ============
-let AUTH = {username:'', password:''};
-let ROLE = '', PRO_NAME = '';
-let STAGES = [], COLS = [], DATA = [];
-const api = FIXED_API_URL;
+// ═══════════════════════════════════════════════════════
+// ⚙️ GITHUB मा upload गर्नुअघि आफ्नो Web App URL यहाँ राख्नुहोस्:
+// ═══════════════════════════════════════════════════════
+const FIXED_API_URL = 'https://script.google.com/macros/s/AKfycbwz3THNx1lwT7sXxlruZJ4kPL30M6MYxqfCsMfu88rPUR_cAinFoEh71KxxerNRQJs2EQ/exec';
+const COMPANY_NAME = 'Link Star Manpower Services Pvt. Ltd.';
+const COMPANY_LICENSE = '1025/068/069';
 
-async function call(action, extra){
-  const body = Object.assign({action, username:AUTH.username, password:AUTH.password}, extra||{});
-  const r = await fetch(api, {method:'POST', body:JSON.stringify(body)});
-  return await r.json();
+const LS_URL = 'shram_api_url';
+const SS_KEY = 'shram_session';
+let API_URL = FIXED_API_URL || localStorage.getItem(LS_URL) || '';
+let session = null;
+let workers = [], pres = [];
+let editingWId = null, editingPId = null;
+
+// ================= नेपाली पात्रो (BS) =================
+const BS_START = {2078:new Date(2021,3,14),2079:new Date(2022,3,14),2080:new Date(2023,3,14),2081:new Date(2024,3,13),2082:new Date(2025,3,14),2083:new Date(2026,3,14),2084:new Date(2027,3,14),2085:new Date(2028,3,13),2086:new Date(2029,3,14),2087:new Date(2030,3,14),2088:new Date(2031,3,14),2089:new Date(2032,3,13),2090:new Date(2033,3,14),2091:new Date(2034,3,14),2092:new Date(2035,3,14),2093:new Date(2036,3,13),2094:new Date(2037,3,14),2095:new Date(2038,3,14)};
+const BS_DAYS = {2078:[31,31,31,32,31,31,30,29,30,29,30,30],2079:[31,31,32,31,31,31,30,29,30,30,29,31],2080:[31,32,31,32,31,30,30,30,29,30,29,31],2081:[31,31,32,32,31,30,30,29,30,29,30,30],2082:[31,31,32,31,31,31,30,29,30,29,30,30],2083:[31,32,31,31,31,30,30,29,30,29,30,30],2084:[31,31,32,31,31,30,30,29,30,29,30,30],2085:[31,32,31,32,30,31,30,29,30,29,30,30],2086:[31,32,31,32,31,30,30,29,30,29,30,30],2087:[31,31,32,31,31,31,30,29,30,29,30,30],2088:[30,31,32,32,30,31,30,29,30,29,30,30],2089:[31,31,32,31,31,30,30,29,30,29,30,30],2090:[31,32,31,32,31,30,30,29,30,29,30,30],2091:[31,31,32,31,31,31,30,29,30,29,30,30],2092:[31,31,32,32,31,30,30,29,30,29,30,30],2093:[31,32,31,32,31,30,30,29,30,29,30,30],2094:[31,31,32,31,31,31,30,29,30,29,30,30],2095:[31,31,32,31,31,31,30,29,30,29,30,30]};
+const BS_DEFAULT = [31,32,31,32,31,30,30,29,30,29,30,30];
+const BS_NAMES = ["बैशाख","जेठ","असार","साउन","भदौ","असोज","कात्तिक","मंसिर","पुस","माघ","फागुन","चैत"];
+const FY_MONTH_ORDER = ["साउन","भदौ","असोज","कात्तिक","मंसिर","पुस","माघ","फागुन","चैत","बैशाख","जेठ","असार"];
+
+function adToBs(d){
+  const date = (d instanceof Date) ? d : new Date(d);
+  if(isNaN(date)) return null;
+  const years = Object.keys(BS_START).map(Number).sort((a,b)=>b-a);
+  for(const y of years){
+    if(date >= BS_START[y]){
+      let days = Math.floor((date - BS_START[y]) / 86400000);
+      const yd = BS_DAYS[y] || BS_DEFAULT;
+      for(let m=0;m<12;m++){
+        if(days < yd[m]) return {year:y, monthIdx:m, monthName:BS_NAMES[m]};
+        days -= yd[m];
+      }
+      return {year:y, monthIdx:11, monthName:BS_NAMES[11]};
+    }
+  }
+  return null;
+}
+function nepaliMonth(d){ const b = adToBs(d); return b ? b.monthName : ''; }
+// आ.व.: साउन (idx 3) देखि असार (idx 2 अर्को वर्ष)
+function fiscalYearLabelOf(d){
+  const b = adToBs(d);
+  if(!b) return '';
+  const fyStart = (b.monthIdx >= 3) ? b.year : b.year - 1;
+  return fyStart + '-' + String((fyStart + 1) % 100).padStart(2,'0');
+}
+function shrawan1(y){
+  const yd = BS_DAYS[y] || BS_DEFAULT;
+  const days = yd[0] + yd[1] + yd[2];
+  return new Date(BS_START[y].getTime() + days * 86400000);
+}
+function fiscalYears(){
+  const list = [];
+  for(let y = 2080; y <= 2093; y++){
+    if(!BS_START[y] || !BS_START[y+1]) continue;
+    const start = shrawan1(y);
+    const end = new Date(shrawan1(y+1).getTime() - 86400000);
+    list.push({ label: y + '-' + String((y+1)%100).padStart(2,'0'), start, end });
+  }
+  return list;
+}
+const FY_LIST = fiscalYears();
+function fmtDate(d){ return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0'); }
+function inFY(dateStr, fy){
+  if(!dateStr) return false;
+  const d = new Date(dateStr);
+  if(isNaN(d)) return false;
+  return d >= fy.start && d <= fy.end;
+}
+function currentFY(){
+  const sel = document.getElementById('fy-select').value;
+  return FY_LIST.find(f => f.label === sel) || FY_LIST[0];
 }
 
-// ============ Login ============
+// ================= HELPERS =================
+function showLoading(on){ document.getElementById('loading-overlay').style.display = on ? 'flex' : 'none'; }
+let syncCount = 0;
+function showSync(on){ syncCount += on?1:-1; if(syncCount<0) syncCount=0; document.getElementById('sync-badge').style.display = syncCount>0?'block':'none'; }
+function isAdmin(){ return session && session.role === 'admin'; }
+function cleanPassport(p){ return String(p).toUpperCase().replace(/[^A-Z0-9]/g,''); }
+function validPassport(p){ return /^\d{8}$/.test(p) || /^[A-Z][A-Z0-9]{8}$/.test(p); }
+const PP_ERROR = '⛔ पासपोर्ट नम्बर मिलेन!\n• अंकबाट सुरु = ८ अंक (09456832)\n• अक्षरबाट सुरु = ९ वटा (PA0987632)\nDot/Comma/Space मिल्दैन।';
+const STATUS_BADGE = {Entry:'s-entry', Upload:'s-upload', Submitted:'s-submitted', Approved:'s-approved', Rejected:'s-rejected', Cancel:'s-cancel'};
+function statusBadge(s){ return `<span class="badge ${STATUS_BADGE[s]||'s-entry'}">${s||'Entry'}</span>`; }
+
+// ================= भूमिका (ROLE) अनुसार workflow अनुमति =================
+// receptionist → Entry (दर्ता) | documentation → Entry↔Upload (कागजात/FEIMS) |
+// shram (श्रम प्रतिनिधि) → Upload→Submitted→Approved/Rejected (अन्तिम आवेदन) | admin → सबै
+const ROLE_STATUS_MAP = {
+  receptionist: ['Entry','Cancel'],
+  documentation: ['Entry','Upload','Cancel'],
+  shram: ['Upload','Submitted','Approved','Rejected','Cancel']
+};
+const ROLE_LABEL = { admin:'Admin', receptionist:'Receptionist', documentation:'Documentation', shram:'श्रम प्रतिनिधि' };
+function allowedStatuses(){
+  if(!session || session.role==='admin') return ['Entry','Upload','Submitted','Approved','Rejected','Cancel'];
+  return ROLE_STATUS_MAP[session.role] || ['Entry','Upload','Submitted','Approved','Rejected','Cancel'];
+}
+
+async function api(action, extra, credsOverride, blocking){
+  if(blocking) showLoading(true); else showSync(true);
+  try{
+    const creds = credsOverride || session;
+    const body = Object.assign({ action, username:creds.u, password:creds.p }, extra||{});
+    const res = await fetch(API_URL, { method:'POST', body: JSON.stringify(body) });
+    const data = await res.json();
+    if(!data.ok && data.error==='AUTH' && action!=='login'){ alert('सत्र समाप्त — फेरि Login गर्नुहोस्।'); logout(); }
+    return data;
+  }catch(err){ return { ok:false, error:'NETWORK', detail:String(err) }; }
+  finally{ if(blocking) showLoading(false); else showSync(false); }
+}
+
+// ================= SETUP / LOGIN =================
+function saveApiUrl(){
+  const url = document.getElementById('setup-url').value.trim();
+  if(!url.startsWith('https://script.google.com/')){ document.getElementById('setup-error').textContent='अमान्य URL।'; return; }
+  localStorage.setItem(LS_URL, url); API_URL = url; showScreen('login');
+}
+function changeApiUrl(){
+  if(FIXED_API_URL){ alert('URL सिस्टमभित्रै तोकिएको छ।'); return; }
+  const url = prompt('नयाँ Web App URL:', API_URL);
+  if(url && url.trim().startsWith('https://script.google.com/')){ localStorage.setItem(LS_URL,url.trim()); API_URL=url.trim(); alert('बदलियो।'); }
+}
+function showScreen(n){
+  document.getElementById('setup-screen').style.display = n==='setup'?'block':'none';
+  document.getElementById('login-screen').style.display = n==='login'?'block':'none';
+  document.getElementById('main-app').style.display = n==='app'?'block':'none';
+}
 async function doLogin(){
-  const u = document.getElementById('lg-user').value.trim();
-  const p = document.getElementById('lg-pass').value;
-  if(!api){ document.getElementById('lg-msg').textContent = 'API URL राखिएको छैन (FIXED_API_URL)।'; return; }
-  AUTH = {username:u, password:p};
-  const r = await call('list');
-  if(!r.ok){ document.getElementById('lg-msg').textContent = r.error==='AUTH' ? 'गलत username/password।' : ('त्रुटि: '+r.error); return; }
-  ROLE = r.role; PRO_NAME = r.proName||''; STAGES = r.stages; COLS = r.cols;
-  DATA = unpack(r.rows);
-  document.getElementById('login').classList.add('hidden');
-  document.getElementById('app').classList.remove('hidden');
-  document.getElementById('who-name').textContent = r.fullName || u;
-  document.getElementById('who-role').textContent = ROLE;
-  buildTabs(); buildStageSelect(); renderAll();
-}
-function logout(){ AUTH={username:'',password:''}; location.reload(); }
-
-function unpack(rows){
-  return rows.map(function(r){ const o={}; COLS.forEach(function(k,i){ o[k]=r[i]; }); return o; });
-}
-
-// ============ Tabs (role अनुसार) ============
-function buildTabs(){
-  const defs = [
-    {id:'dash', label:'📊 ड्यासबोर्ड', roles:['admin','reception','documentation','shram','accounts','pro']},
-    {id:'cand', label:'👥 कामदार', roles:['admin','reception','documentation','shram','accounts','pro']},
-    {id:'acc',  label:'💰 हिसाब', roles:['admin','accounts']},
-    {id:'users',label:'⚙️ प्रयोगकर्ता', roles:['admin']},
-  ];
-  const t = document.getElementById('tabs'); t.innerHTML='';
-  defs.filter(function(d){ return d.roles.indexOf(ROLE)>=0; }).forEach(function(d,i){
-    const b=document.createElement('button');
-    b.className='tab'+(i===0?' active':''); b.textContent=d.label;
-    b.id='tabbtn-'+d.id;
-    b.onclick=function(){ switchTab(d.id, b); };
-    t.appendChild(b);
-  });
-  // pro/reception/doc/shram लाई पैसा column लुकाउने
-  const showMoney = (ROLE==='admin'||ROLE==='accounts');
-  document.getElementById('th-money').style.display = showMoney?'':'none';
-  document.getElementById('btn-new').style.display = (ROLE==='pro')?'none':'';
-  updateQueueBadge();
-}
-function updateQueueBadge(){
-  if(ROLE==='admin' || ROLE==='pro') return;
-  const myQueue = DATA.filter(function(c){ return (c.owner||'reception')===ROLE; }).length;
-  const btn = document.getElementById('tabbtn-cand');
-  if(!btn) return;
-  const old = document.getElementById('queue-badge'); if(old) old.remove();
-  if(myQueue>0){
-    const badge = document.createElement('span');
-    badge.id='queue-badge';
-    badge.style.cssText='background:var(--danger);color:#fff;border-radius:999px;padding:1px 8px;font-size:11px;margin-left:6px;font-weight:800;';
-    badge.textContent = myQueue;
-    btn.appendChild(badge);
-  }
-}
-function switchTab(id, btn){
-  document.querySelectorAll('.tabpage').forEach(function(s){ s.classList.add('hidden'); });
-  document.getElementById('tab-'+id).classList.remove('hidden');
-  document.querySelectorAll('.tab').forEach(function(b){ b.classList.remove('active'); });
-  btn.classList.add('active');
-  if(id==='users') loadUsers();
-}
-function buildStageSelect(){
-  const s=document.getElementById('m-stage'); s.innerHTML='';
-  STAGES.forEach(function(st){ const o=document.createElement('option'); o.value=st; o.textContent=st; s.appendChild(o); });
-}
-
-// ============ Render ============
-function renderAll(){ renderDash(); renderCand(); renderAcc(); updateQueueBadge(); }
-
-function renderDash(){
-  const total=DATA.length;
-  const deployed=DATA.filter(function(c){return c.stage==='Deployed';}).length;
-  const preApp=DATA.filter(function(c){return c.stage==='Pre-Approval';}).length;
-  const finalApp=DATA.filter(function(c){return c.stage==='Final Labor Approval';}).length;
-  const visa=DATA.filter(function(c){return c.stage==='Visa Received'||c.stage==='Visa Processing';}).length;
-  const active=total-deployed;
-  const cards=[
-    ['कुल कामदार',total,'var(--brand)'],['सक्रिय',active,'var(--warn)'],
-    ['पूर्व स्वीकृति',preApp,'var(--plum)'],['भिसा',visa,'var(--brand-2)'],
-    ['अन्तिम स्वीकृति',finalApp,'var(--ok)'],['उडान (Deployed)',deployed,'var(--gold)']
-  ];
-  if(ROLE!=='admin' && ROLE!=='pro'){
-    const myQueue = DATA.filter(function(c){ return (c.owner||'reception')===ROLE; }).length;
-    const myRejects = DATA.filter(function(c){ return (c.owner||'reception')===ROLE && c.rejectFlag==='Yes'; }).length;
-    cards.unshift(['⚠️ Reject फर्किएको',myRejects,'var(--danger)']);
-    cards.unshift(['🔔 मेरो पालो (queue)',myQueue,'var(--plum)']);
-  }
-  document.getElementById('dash-cards').innerHTML = cards.map(function(c){
-    return '<div class="stat"><div class="n" style="color:'+c[2]+'">'+c[1]+'</div><div class="l">'+c[0]+'</div></div>';
-  }).join('');
-  // pipeline: प्रत्येक stage मा कति
-  const counts={}; STAGES.forEach(function(s){counts[s]=0;});
-  DATA.forEach(function(c){ if(counts[c.stage]!==undefined) counts[c.stage]++; });
-  document.getElementById('pipeline').innerHTML = '<div class="steps">'+STAGES.map(function(s,i){
-    return '<span class="step'+(counts[s]>0?' now':'')+'">'+(i+1)+'. '+s+' — <b>'+counts[s]+'</b></span>';
-  }).join('')+'</div>';
-}
-
-function stageStepper(current){
-  const idx = STAGES.indexOf(current);
-  return '<div class="steps">'+STAGES.map(function(s,i){
-    let cls='step'; if(i<idx)cls+=' done'; else if(i===idx)cls+=' now';
-    return '<span class="'+cls+'">'+(i+1)+'</span>';
-  }).join('')+'</div>';
-}
-
-function renderCand(){
-  const q=(document.getElementById('cand-search').value||'').toLowerCase();
-  const showMoney=(ROLE==='admin'||ROLE==='accounts');
-  const onlyMine = document.getElementById('cand-mine') && document.getElementById('cand-mine').checked;
-  let rows=DATA.filter(function(c){
-    return !q || (c.name||'').toLowerCase().includes(q) || (c.passport||'').toLowerCase().includes(q)
-      || (c.country||'').toLowerCase().includes(q) || (c.referredBy||'').toLowerCase().includes(q)
-      || (c.company||'').toLowerCase().includes(q);
-  });
-  if(onlyMine && ROLE!=='admin' && ROLE!=='pro') rows = rows.filter(function(c){ return (c.owner||'reception')===ROLE; });
-  rows.sort(function(a,b){ return String(b.createdAt||'').localeCompare(String(a.createdAt||'')); });
-  const canEdit = (ROLE!=='pro');
-  document.getElementById('cand-body').innerHTML = rows.map(function(c){
-    const bal=(Number(c.totalAmount)||0)-(Number(c.received)||0);
-    const money= showMoney ? '<td>बाँकी: '+bal.toLocaleString()+'</td>' : '';
-    const owner = c.owner||'reception';
-    const isMine = (owner===ROLE);
-    const canBulk = (ROLE==='admin' || owner===ROLE);
-    let ownerPill = '<span class="pill" style="background:'+(isMine?'#dcfce7':'#eef2f7')+';color:'+(isMine?'#166534':'var(--brand)')+';">'+(DEPT_LABELS[owner]||owner)+'</span>';
-    if(c.rejectFlag==='Yes') ownerPill += '<br><span class="note" style="color:var(--danger);font-weight:700;">⚠️ Reject फर्किएको</span>';
-    const chk = canBulk ? '<input type="checkbox" class="cand-chk" data-passport="'+c.passport+'" onchange="onRowCheck()">' : '';
-    return '<tr>'+
-      '<td>'+chk+'</td>'+
-      '<td><b>'+(c.name||'')+'</b><br><span class="note">'+(c.passport||'')+'</span></td>'+
-      '<td>'+(c.referredBy||'-')+'<br><span class="note">'+(c.source||'')+'</span></td>'+
-      '<td>'+(c.country||'-')+'<br><span class="note">'+(c.company||'')+'</span></td>'+
-      '<td><span class="pill">'+(c.stage||'-')+'</span></td>'+
-      '<td>'+ownerPill+'</td>'+
-      money+
-      '<td>'+(canEdit?'<button class="btn btn-sm btn-ghost" onclick="openEdit(\''+c.passport+'\')">खोल्नुहोस्</button>':'<span class="note">हेर्ने मात्र</span>')+'</td>'+
-    '</tr>';
-  }).join('') || '<tr><td colspan="8" style="text-align:center;color:var(--muted)">कुनै कामदार छैन</td></tr>';
-  document.getElementById('bulk-bar').classList.add('hidden');
-  document.getElementById('cand-select-all').checked=false;
-}
-
-// ============ Bulk Stage Update ============
-function toggleSelectAll(box){
-  document.querySelectorAll('.cand-chk').forEach(function(c){ c.checked = box.checked; });
-  onRowCheck();
-}
-function onRowCheck(){
-  const checked = document.querySelectorAll('.cand-chk:checked');
-  const bar = document.getElementById('bulk-bar');
-  if(checked.length>0){
-    bar.classList.remove('hidden');
-    document.getElementById('bulk-count').textContent = checked.length+' कामदार छानिए';
-    const sel = document.getElementById('bulk-stage');
-    if(!sel.dataset.filled){ STAGES.forEach(function(s){ const o=document.createElement('option'); o.value=s; o.textContent=s; sel.appendChild(o); }); sel.dataset.filled='1'; }
-  } else {
-    bar.classList.add('hidden');
-  }
-}
-function clearBulkSelection(){
-  document.querySelectorAll('.cand-chk').forEach(function(c){ c.checked=false; });
-  document.getElementById('cand-select-all').checked=false;
-  document.getElementById('bulk-bar').classList.add('hidden');
-}
-async function applyBulkStage(){
-  const checked = Array.from(document.querySelectorAll('.cand-chk:checked')).map(function(c){ return c.dataset.passport; });
-  const stage = document.getElementById('bulk-stage').value;
-  if(!checked.length || !stage) return;
-  if(!confirm(checked.length+' कामदारको stage "'+stage+'" मा बदल्ने हो?')) return;
-  const r = await call('bulkStage', {passports:checked, stage:stage});
+  const u = document.getElementById('login-user').value.trim();
+  const p = document.getElementById('login-pass').value;
+  if(!u||!p){ document.getElementById('login-error').textContent='Username र Password भर्नुहोस्।'; return; }
+  const r = await api('login', {}, {u,p}, true);
   if(r.ok){
-    let msg = '✅ '+r.updated+' कामदार अपडेट भयो।';
-    if(r.skipped && r.skipped.length) msg += '\n⚠️ '+r.skipped.length+' वटा skip भयो (lock वा भेटिएन)।';
-    alert(msg);
-    clearBulkSelection();
-    await refresh();
-  } else alert('भएन: '+(r.error||'?'));
+    session = { u, p, role:r.role, fullName:r.fullName };
+    sessionStorage.setItem(SS_KEY, JSON.stringify(session));
+    document.getElementById('login-pass').value='';
+    initApp();
+    await refreshData(true);
+  } else if(r.error==='AUTH') document.getElementById('login-error').textContent='Username वा Password मिलेन।';
+  else if(r.error==='NETWORK') document.getElementById('login-error').textContent='सर्भर जडान भएन।';
 }
-
-function renderAcc(){
-  if(ROLE!=='admin'&&ROLE!=='accounts') return;
-  const q=(document.getElementById('acc-search').value||'').toLowerCase();
-  const rows=DATA.filter(function(c){ return !q||(c.name||'').toLowerCase().includes(q)||(c.passport||'').toLowerCase().includes(q); });
-  document.getElementById('acc-body').innerHTML = rows.map(function(c){
-    const total=Number(c.totalAmount)||0, rec=Number(c.received)||0, bal=total-rec;
-    return '<tr><td><b>'+(c.name||'')+'</b><br><span class="note">'+(c.passport||'')+'</span></td>'+
-      '<td>'+(c.country||'-')+'</td><td>'+total.toLocaleString()+'</td><td>'+rec.toLocaleString()+'</td>'+
-      '<td style="font-weight:700;color:'+(bal>0?'var(--danger)':'var(--ok)')+'">'+bal.toLocaleString()+'</td>'+
-      '<td><button class="btn btn-sm btn-ghost" onclick="openEdit(\''+c.passport+'\')">खोल्नुहोस्</button></td></tr>';
-  }).join('') || '<tr><td colspan="6" style="text-align:center;color:var(--muted)">—</td></tr>';
+function initApp(){
+  showScreen('app');
+  document.body.classList.toggle('role-staff', session.role !== 'admin');
+  document.body.classList.remove('role-receptionist','role-documentation','role-shram');
+  if(ROLE_STATUS_MAP[session.role]) document.body.classList.add('role-' + session.role);
+  document.getElementById('who-is-in').textContent = (session.fullName || session.u) + (ROLE_LABEL[session.role] ? ' · ' + ROLE_LABEL[session.role] : '');
+  // FY dropdown
+  const sel = document.getElementById('fy-select');
+  const todayFY = fiscalYearLabelOf(new Date());
+  sel.innerHTML = FY_LIST.map(f=>`<option value="${f.label}" ${f.label===todayFY?'selected':''}>${f.label}</option>`).join('');
+  // status filter
+  document.getElementById('w-status-filter').innerHTML = '<option value="">— All Status —</option>' + Object.keys(STATUS_BADGE).map(s=>`<option>${s}</option>`).join('');
+  // पूर्व स्वीकृति form मा पहिलो पद row
+  if(document.getElementById('p-positions') && document.querySelectorAll('#p-positions .pos-row').length===0){ addPositionRow(); recomputePosTotals(); }
 }
-
-// ============ Modal ============
-let editing = null;
-const DEPT_LABELS = {reception:'रिसेप्शन', documentation:'डकुमेन्टेशन', shram:'श्रम', accounts:'लेखा'};
-
-function openNew(){
-  editing = null;
-  document.getElementById('m-title').textContent='नयाँ कामदार';
-  ['passport','name','age','phone','referredby','country','company','lotno','profession','visano','total','received','paid','remarks'].forEach(function(k){ document.getElementById('m-'+k).value=''; });
-  document.getElementById('m-gender').value='Male';
-  document.getElementById('m-source').value='PRO';
-  document.getElementById('m-stage').value=STAGES[0];
-  document.getElementById('m-medical').value=''; document.getElementById('m-orientation').value='';
-  document.getElementById('m-passport').disabled=false;
-  document.getElementById('m-owner-badge').innerHTML='';
-  document.getElementById('fwd-box').classList.add('hidden');
-  document.getElementById('btn-reject').classList.add('hidden');
-  document.getElementById('docs-box').classList.add('hidden');
-  document.getElementById('hist-box').classList.add('hidden');
-  setFieldsDisabled(false);
-  applyModalPerms();
-  document.getElementById('m-steps').innerHTML=stageStepper(STAGES[0]);
-  document.getElementById('modal').classList.add('show');
+function logout(){ session=null; sessionStorage.removeItem(SS_KEY); showScreen('login'); }
+async function openChangePass(){
+  const np = prompt('नयाँ Password:');
+  if(!np) return;
+  const r = await api('changepass',{newPassword:np},null,true);
+  if(r.ok){ session.p=np; sessionStorage.setItem(SS_KEY,JSON.stringify(session)); alert('Password बदलियो।'); }
 }
-function setFieldsDisabled(locked){
-  ['m-name','m-age','m-gender','m-phone','m-source','m-referredby','m-country','m-company','m-lotno','m-profession','m-stage','m-medical','m-orientation','m-visano','m-remarks'].forEach(function(id){
-    document.getElementById(id).disabled = locked;
-  });
-}
-function openEdit(pass){
-  const c = DATA.find(function(x){ return String(x.passport).toUpperCase()===String(pass).toUpperCase(); });
+async function manageUsers(){
+  if(!isAdmin()) return;
+  const lr = await api('listusers',{},null,true);
+  if(!lr.ok) return;
+  const list = lr.users.map(u=>`• ${u.fullName} — ${u.username} (${u.role})`).join('\n');
+  const c = prompt('प्रयोगकर्ताहरू:\n'+list+'\n\n"add" वा "remove" लेख्नुहोस्:');
   if(!c) return;
-  editing = c;
-  document.getElementById('m-title').textContent = c.name+' — विवरण';
-  document.getElementById('m-passport').value=c.passport; document.getElementById('m-passport').disabled=true;
-  document.getElementById('m-name').value=c.name||''; document.getElementById('m-age').value=c.age||'';
-  document.getElementById('m-gender').value=c.gender||'Male'; document.getElementById('m-phone').value=c.phone||'';
-  document.getElementById('m-source').value=c.source||'Direct'; document.getElementById('m-referredby').value=c.referredBy||'';
-  document.getElementById('m-country').value=c.country||''; document.getElementById('m-company').value=c.company||'';
-  document.getElementById('m-lotno').value=c.lotNo||''; document.getElementById('m-profession').value=c.demandProfession||'';
-  document.getElementById('m-stage').value=c.stage||STAGES[0];
-  document.getElementById('m-medical').value=c.medical||''; document.getElementById('m-orientation').value=c.orientation||'';
-  document.getElementById('m-visano').value=c.visaNo||'';
-  document.getElementById('m-total').value=c.totalAmount||''; document.getElementById('m-received').value=c.received||''; document.getElementById('m-paid').value=c.paid||'';
-  document.getElementById('m-remarks').value=c.remarks||'';
-
-  // 🔒 Lock: owner नमिले, edit गर्न नपाउने (admin/accounts बाहेक)
-  const owner = c.owner || 'reception';
-  const isOwner = (ROLE==='admin' || ROLE==='accounts' || owner===ROLE);
-  setFieldsDisabled(!isOwner);
-
-  let badge = '<b>हाल जिम्मामा:</b> '+(DEPT_LABELS[owner]||owner);
-  if(c.rejectFlag==='Yes'){
-    badge += '<br><span style="color:var(--danger);font-weight:700;">⚠️ Reject भएर फर्किएको — कारण: '+(c.rejectReason||'')+'</span>';
+  if(c.trim().toLowerCase()==='add'){
+    const fn=prompt('पूरा नाम:'); if(!fn) return;
+    const nu=prompt('Username:'); if(!nu) return;
+    const np=prompt('Password:'); if(!np) return;
+    const role=prompt('भूमिका छान्नुहोस्:\n\nreceptionist = नयाँ कामदार दर्ता (Status: Entry) मात्र\ndocumentation = कागजात/FEIMS प्रक्रिया (Status: Entry↔Upload)\nshram = श्रम प्रतिनिधि — अन्तिम आवेदन (Status: Upload→Submitted→Approved/Rejected)\nadmin = सबै अधिकार','receptionist'); if(!role) return;
+    const r=await api('adduser',{newUsername:nu.trim(),newPassword:np,newRole:role.trim().toLowerCase(),newFullName:fn.trim()},null,true);
+    if(r.ok) alert('थपियो।'); else if(r.error==='DUPLICATE_USER') alert('Username पहिल्यै छ।');
+  } else if(c.trim().toLowerCase()==='remove'){
+    const ru=prompt('हटाउने Username:'); if(!ru) return;
+    const r=await api('removeuser',{targetUsername:ru.trim()},null,true);
+    if(r.ok) alert('हटाइयो।');
+    else if(r.error==='LAST_ADMIN') alert('कम्तिमा एउटा Admin चाहिन्छ।');
+    else if(r.error==='CANT_REMOVE_SELF') alert('आफैलाई हटाउन मिल्दैन।');
   }
-  if(!isOwner) badge += '<br><span style="color:var(--warn)">🔒 यो कामदार अहिले तपाईंको विभागसँग छैन — हेर्न मात्र मिल्छ।</span>';
-  document.getElementById('m-owner-badge').innerHTML = badge;
+}
 
-  // Forward/Reject — owner भएको बेला मात्र देखिने
-  if(isOwner && ROLE!=='pro'){
-    document.getElementById('fwd-box').classList.remove('hidden');
-    const sel = document.getElementById('fwd-dept'); sel.innerHTML='';
-    DEPTS.filter(function(d){ return d!==owner; }).forEach(function(d){
-      const o=document.createElement('option'); o.value=d; o.textContent=DEPT_LABELS[d]; sel.appendChild(o);
-    });
-    document.getElementById('btn-reject').classList.toggle('hidden', !c.forwardedBy);
+// ================= DATA =================
+// server बाट आउने सानो payload (array) लाई object मा फर्काउने + देखाउने रूप मिलाउने
+function titleCase(v){
+  return String(v==null?'':v).trim().replace(/\s+/g,' ').toLowerCase()
+    .replace(/(^|[\s.'-])([a-z])/g, (m,a,b)=>a+b.toUpperCase());
+}
+const VALID_ST = ['Entry','Upload','Submitted','Approved','Rejected','Cancel'];
+function unpack(cols, rows, isWorker){
+  const out = new Array(rows.length);
+  for(let i=0;i<rows.length;i++){
+    const o = {};
+    for(let j=0;j<cols.length;j++) o[cols[j]] = rows[i][j];
+    if(isWorker){
+      if(o.name) o.name = titleCase(o.name);
+      o.passport = String(o.passport==null?'':o.passport).toUpperCase().replace(/[^A-Z0-9]/g,'');
+      const g = String(o.gender||'').trim().toUpperCase();
+      o.gender = (g==='M'||g==='MALE'||g==='पुरुष') ? 'Male' : (g==='F'||g==='FEMALE'||g==='महिला') ? 'Female' : '';
+      let st = String(o.status||'').trim().toUpperCase();
+      if(st==='CANCLE') st='CANCEL';
+      o.status = VALID_ST.find(x=>x.toUpperCase()===st) || 'Entry';
+    }
+    out[i] = o;
+  }
+  return out;
+}
+async function refreshData(blocking){
+  const r = await api('list', {}, null, !!blocking);
+  if(!r || !r.ok){ renderAll(); return; }  // गडबड भए पनि भएको डाटा राख्ने, खाली नआउने
+  // नयाँ (सानो) ढाँचा भए त्यही, नभए पुरानो ढाँचा — दुवैसँग चल्छ
+  if(r.wrows && r.wcols){
+    workers = unpack(r.wcols, r.wrows, true);
+    pres    = unpack(r.pcols, r.prows, false);
+  } else if(r.workers){
+    workers = r.workers.map(w=>unpack(Object.keys(w), [Object.values(w)], true)[0]);
+    pres    = r.pres || [];
+  }
+  renderAll();
+}
+function renderAll(){ renderDashboard(); renderWorkers(); renderPres(); renderReport(); renderAlerts(); }
+
+// ================= TABS =================
+function switchTab(ev, id){
+  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  ev.currentTarget.classList.add('active');
+  // ट्याब बटनबाट Pre-Permission खोल्दा सबै देखिने (कार्ड फिल्टर हट्ने)
+  if(id==='tab-pre' && preCardFY){
+    preCardFY = null;
+    document.querySelectorAll('.clickable-card').forEach(c=>c.classList.remove('card-active'));
+    renderPres();
+  }
+}
+
+// ================= DASHBOARD =================
+function fyStats(fy){
+  const preIn = pres.filter(p=>inFY(p.approvalDate, fy));
+  const preM = preIn.reduce((s,p)=>s+(Number(p.maleCount)||0),0);
+  const preF = preIn.reduce((s,p)=>s+(Number(p.femaleCount)||0),0);
+  // ✅ कर/audit आधार = यसै आ.व. अन्तिम श्रम स्वीकृति लिएकाहरू (Cancel पूरै हटाइन्छ)
+  const appIn = workers.filter(w=>w.status==='Approved' && inFY(w.approveDate, fy));
+  const appM = appIn.filter(w=>w.gender==='Male').length;
+  const appF = appIn.filter(w=>w.gender==='Female').length;
+  // ✈ विभागका लागि: यस आ.व.मा साँच्चै उडेका सबै (जुनसुकै आ.व.को स्वीकृति भए पनि)
+  const flownAllList = workers.filter(w=>w.status==='Approved' && inFY(w.departDate, fy));
+  const flownAll = flownAllList.length;
+  const flownM = flownAllList.filter(w=>w.gender==='Male').length;
+  const flownF = flownAllList.filter(w=>w.gender==='Female').length;
+  // यसै आ.व. स्वीकृति लिएर यसै आ.व. उडेका
+  const flownCohort = appIn.filter(w=>inFY(w.departDate, fy)).length;
+  // अघिल्लो आ.व.को स्वीकृति लिएर यस आ.व. उडेका (कर अघिल्लै वर्ष तिरिसकेको)
+  const flownPrev = flownAll - flownCohort;
+  // ⏳ उड्न बाँकी = यसै आ.व. स्वीकृत मध्ये यस आ.व.भित्र नउडेका
+  const pendList = appIn.filter(w=>!inFY(w.departDate, fy));
+  const pending = pendList.length;
+  const pendM = pendList.filter(w=>w.gender==='Male').length;
+  const pendF = pendList.filter(w=>w.gender==='Female').length;
+  const flown = flownAll;
+  // ⊘ Cancel = श्रम स्वीकृति लिएको मिति अनुसार (नभए दर्ता मिति)
+  const entryDate = w => String(w.createdAt||'').slice(0,10);
+  const cDate = w => w.approveDate || entryDate(w);
+  const cancelList = workers.filter(w=>w.status==='Cancel' && inFY(cDate(w), fy));
+  // ✗ Rejected = डाटा इन्ट्री (दर्ता) मिति अनुसार
+  const rejList = workers.filter(w=>w.status==='Rejected' && inFY(entryDate(w), fy));
+  // मिति नै नभएका — कुनै आ.व.मा नगनी छुट्टै चेतावनीमा देखाउने (दोहोरो गणना रोक्न)
+  const cancelNoDate = workers.filter(w=>w.status==='Cancel' && !cDate(w));
+  const rejNoDate = workers.filter(w=>w.status==='Rejected' && !entryDate(w));
+  return { preIn, preM, preF, appIn, appM, appF, flown, flownAll, flownM, flownF, flownCohort, flownPrev,
+           pending, pendM, pendF, cancel: cancelList.length, rejected: rejList.length, rejNoDate, cancelNoDate };
+}
+function renderDashboard(){
+  const fy = currentFY();
+  document.getElementById('fy-range').textContent = fmtDate(fy.start) + ' देखि ' + fmtDate(fy.end) + ' सम्म';
+  const s = fyStats(fy);
+  document.getElementById('d-pre-total').textContent = s.preM + s.preF;
+  document.getElementById('d-pre-sub').textContent = `M ${s.preM} | F ${s.preF} | Lot ${s.preIn.length}`;
+  document.getElementById('d-approved').textContent = s.appIn.length;
+  document.getElementById('d-app-sub').textContent = `M ${s.appM} | F ${s.appF}`;
+  document.getElementById('d-flown').textContent = s.flown;
+  document.getElementById('d-flown-sub').textContent = `This FY ${s.flownCohort} | Previous FY ${s.flownPrev}`;
+  document.getElementById('d-remaining').textContent = s.pending;
+  document.getElementById('d-rem-sub').textContent = `of ${s.appIn.length} approved this FY`;
+  document.getElementById('d-cancel').textContent = s.cancel;
+  document.getElementById('d-rejected').textContent = s.rejected;
+  document.getElementById('d-rej-sub').textContent = s.rejNoDate.length ? `⚠ ${s.rejNoDate.length} मिति नभएका (गनिएनन्)` : '\u00a0';
+  const cSub = document.querySelector('.stat-card.c-can .sub');
+  if(cSub) cSub.textContent = s.cancelNoDate.length ? `⚠ ${s.cancelNoDate.length} मिति नभएका (गनिएनन्)` : '\u00a0';
+}
+
+// ================= WORKERS =================
+document.getElementById('worker-form').addEventListener('submit', async function(e){
+  e.preventDefault();
+  const passport = cleanPassport(document.getElementById('w-passport').value);
+  if(!validPassport(passport)){ alert(PP_ERROR); return; }
+  const w = {
+    name: document.getElementById('w-name').value.trim(),
+    passport,
+    age: document.getElementById('w-age').value ? Number(document.getElementById('w-age').value) : '',
+    gender: document.getElementById('w-gender').value,
+    lotNo: document.getElementById('w-lotno').value.trim(),
+    newsDate: document.getElementById('w-newsdate').value,
+    issueDate: document.getElementById('w-issuedate').value,
+    visaNo: document.getElementById('w-visano').value.trim(),
+    country: document.getElementById('w-country').value.trim(),
+    company: document.getElementById('w-company').value.trim(),
+    visaProfession: document.getElementById('w-visaprof').value.trim(),
+    demandProfession: document.getElementById('w-demandprof').value.trim(),
+    orientation: document.getElementById('w-orientation').value,
+    medical: document.getElementById('w-medical').value,
+    nepalAddress: document.getElementById('w-nepal-addr').value.trim(),
+    contactAddress: document.getElementById('w-contact-addr').value.trim(),
+    status: 'Entry', approveDate:'', departDate:'', remarks:''
+  };
+  const r = await api('addworker', { worker: w }, null, true);
+  if(r.ok){ workers.push(r.worker); this.reset(); renderAll(); alert('✅ दर्ता भयो।'); }
+  else if(r.error==='DUPLICATE_PASSPORT') alert('⛔ यो पासपोर्ट पहिल्यै दर्ता छ!\nकामदार: '+(r.workerName||'')+'\nStatus: '+(r.status||''));
+  else if(r.error==='INVALID_PASSPORT') alert(PP_ERROR);
+});
+['w-passport','e-passport'].forEach(id=>{
+  document.getElementById(id).addEventListener('input', function(){ this.value = cleanPassport(this.value); });
+});
+
+let activeCardFilter = null;  // {type, label}
+let preCardFY = null;  // Pre-Permission कार्डबाट आएको आ.व. फिल्टर (null = सबै)
+
+function cardFilter(type){
+  const fy = currentFY();
+  const labels = {
+    pre:'पूर्व स्वीकृति', approved:'Final Approval (श्रम स्वीकृति)', departed:'✈ उडेका (Departure)',
+    pending:'⏳ उड्न बाँकी', cancel:'⊘ Cancel', rejected:'✗ Rejected'
+  };
+  // Pre-Permission अलग tab मा — त्यतै पठाउने
+  // Pre-Permission कार्ड → Pre-Permission tab मा त्यही आ.व.को मात्र + कार्ड हाइलाइट
+  if(type==='pre'){
+    preCardFY = fy;
+    switchTabById('tab-pre');
+    document.querySelectorAll('.clickable-card').forEach(c=>c.classList.remove('card-active'));
+    event && event.currentTarget && event.currentTarget.classList.add('card-active');
+    renderPres();
+    return;
+  }
+  activeCardFilter = { type, label: labels[type] };
+  // Master Record tab मा जाने
+  switchTabById('tab-workers');
+  // status dropdown/search रिसेट (कार्ड फिल्टर प्राथमिकता)
+  const sfEl = document.getElementById('w-status-filter'); if(sfEl) sfEl.value='';
+  const qEl = document.getElementById('w-search'); if(qEl) qEl.value='';
+  // banner देखाउने + कार्ड हाइलाइट
+  const b = document.getElementById('card-filter-banner');
+  document.getElementById('card-filter-label').innerHTML =
+    `<b>${labels[type]}</b> — आ.व. <b>${fy.label}</b> मा`;
+  b.classList.add('show');
+  document.querySelectorAll('.clickable-card').forEach(c=>c.classList.remove('card-active'));
+  event && event.currentTarget && event.currentTarget.classList.add('card-active');
+  renderWorkers();
+}
+
+function clearCardFilter(){
+  activeCardFilter = null;
+  document.getElementById('card-filter-banner').classList.remove('show');
+  document.querySelectorAll('.clickable-card').forEach(c=>c.classList.remove('card-active'));
+  renderWorkers();
+}
+
+function switchTabById(id){
+  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  const tab = document.getElementById(id); if(tab) tab.classList.add('active');
+  document.querySelectorAll('.tab-btn').forEach(b=>{ if(b.getAttribute('onclick')&&b.getAttribute('onclick').includes(id)) b.classList.add('active'); });
+}
+
+// कार्ड फिल्टर अनुसार कामदार सूची फर्काउने (आ.व. + श्रेणी)
+function applyCardFilter(list){
+  if(!activeCardFilter) return list;
+  const fy = currentFY();
+  const t = activeCardFilter.type;
+  if(t==='approved') return list.filter(w=>w.status==='Approved' && inFY(w.approveDate, fy));
+  if(t==='departed') return list.filter(w=>w.status==='Approved' && inFY(w.departDate, fy));
+  if(t==='pending')  return list.filter(w=>w.status==='Approved' && inFY(w.approveDate, fy) && !inFY(w.departDate, fy));
+  if(t==='cancel'){
+    return list.filter(w=>w.status==='Cancel' && inFY(w.approveDate || String(w.createdAt||'').slice(0,10), fy));
+  }
+  if(t==='rejected') return list.filter(w=>w.status==='Rejected' && inFY(String(w.createdAt||'').slice(0,10), fy));
+  return list;
+}
+
+function onManualFilter(){
+  // म्यानुअल खोज/status प्रयोग गर्दा कार्ड फिल्टर हट्ने (अलमल नहोस्)
+  if(activeCardFilter){
+    activeCardFilter = null;
+    document.getElementById('card-filter-banner').classList.remove('show');
+    document.querySelectorAll('.clickable-card').forEach(c=>c.classList.remove('card-active'));
+  }
+  renderWorkers();
+}
+
+function renderWorkers(){
+  const q = (document.getElementById('w-search').value||'').toLowerCase();
+  const sf = document.getElementById('w-status-filter').value;
+  let rows = workers.filter(w =>
+    (!q || (w.name||'').toLowerCase().includes(q) || (w.passport||'').toLowerCase().includes(q)
+     || (w.country||'').toLowerCase().includes(q) || (w.company||'').toLowerCase().includes(q)
+     || String(w.visaNo||'').toLowerCase().includes(q) || String(w.lotNo||'').toLowerCase().includes(q))
+    && (!sf || w.status===sf)
+  );
+  rows = applyCardFilter(rows);
+  // नयाँ इन्ट्री माथि (createdAt अनुसार; नभए id अनुसार)
+  rows.sort((a,b)=>{
+    const ca=String(a.createdAt||''), cb=String(b.createdAt||'');
+    if(ca && cb && ca!==cb) return cb.localeCompare(ca);
+    return String(b.id||'').localeCompare(String(a.id||''));
+  });
+  // कार्ड फिल्टर सक्रिय भए banner लाई हालको आ.व.सँग मिलाउने
+  if(activeCardFilter){
+    const fy = currentFY();
+    document.getElementById('card-filter-label').innerHTML =
+      `<b>${activeCardFilter.label}</b> — आ.व. <b>${fy.label}</b> मा`;
+  }
+  lastVisibleWIds = rows.map(w=>w.id);
+  document.getElementById('w-table').innerHTML = rows.map(w=>`
+    <tr>
+      <td><input type="checkbox" ${selectedWIds.has(w.id)?'checked':''} onchange="toggleSelect('${w.id}', this.checked)"></td>
+      <td>${w.name}<br><small style="color:var(--muted)">${w.passport}${w.gender?' • '+gShort(w.gender):''}${w.age?' • '+w.age:''}</small></td>
+      <td>${w.country}<br><small>${w.company}</small></td>
+      <td><small>${w.demandProfession||w.visaProfession||'-'}</small></td>
+      <td>${statusBadge(w.status)}</td>
+      <td>${w.approveDate ? w.approveDate+'<br><small style="color:var(--info)">'+nepaliMonth(w.approveDate)+'</small>' : '-'}</td>
+      <td>${w.departDate ? w.departDate + (isCarryOver(w) ? '<br><span class="carry-tag" title="अघिल्लो आ.व.मा श्रम स्वीकृति लिएर यस आ.व. उडेको — कर अघिल्लै आ.व.मा">⏮ Prev FY Approval</span>' : '') : '-'}</td>
+      <td><button class="btn btn-sm" onclick="openWModal('${w.id}')">View</button></td>
+    </tr>`).join('') || '<tr><td colspan="8" style="text-align:center;color:var(--muted)">कुनै रेकर्ड छैन</td></tr>';
+  const selAllEl = document.getElementById('w-select-all');
+  if(selAllEl){
+    const allSel = rows.length>0 && rows.every(w=>selectedWIds.has(w.id));
+    const someSel = rows.some(w=>selectedWIds.has(w.id));
+    selAllEl.checked = allSel;
+    selAllEl.indeterminate = !allSel && someSel;
+  }
+  updateBulkBar();
+}
+
+// ================= BULK ACTIONS (Master Record) =================
+let selectedWIds = new Set();
+let lastVisibleWIds = [];
+function toggleSelect(id, checked){
+  if(checked) selectedWIds.add(id); else selectedWIds.delete(id);
+  updateBulkBar();
+  const selAllEl = document.getElementById('w-select-all');
+  if(selAllEl){
+    const allSel = lastVisibleWIds.length>0 && lastVisibleWIds.every(i=>selectedWIds.has(i));
+    const someSel = lastVisibleWIds.some(i=>selectedWIds.has(i));
+    selAllEl.checked = allSel;
+    selAllEl.indeterminate = !allSel && someSel;
+  }
+}
+function toggleSelectAllVisible(checked){
+  if(checked) lastVisibleWIds.forEach(id=>selectedWIds.add(id));
+  else lastVisibleWIds.forEach(id=>selectedWIds.delete(id));
+  renderWorkers();
+}
+function clearSelection(){ selectedWIds.clear(); renderWorkers(); }
+function updateBulkBar(){
+  const bar = document.getElementById('bulk-bar');
+  if(!bar) return;
+  const n = selectedWIds.size;
+  if(n===0){ bar.style.display='none'; return; }
+  bar.style.display='flex';
+  document.getElementById('bulk-count').textContent = n + ' जना छानिए';
+  const sel = document.getElementById('bulk-status');
+  const STATUS_LABELS = {Entry:'Entry (दर्ता मात्र)', Upload:'Upload (FEIMS मा)', Submitted:'Submitted (पेश गरिएको)', Approved:'Approved (श्रम स्वीकृति)', Rejected:'Rejected', Cancel:'Cancel'};
+  const cur = sel.value;
+  sel.innerHTML = '<option value="">— नयाँ Status छान्नुहोस् —</option>' + allowedStatuses().map(s=>`<option value="${s}">${STATUS_LABELS[s]}</option>`).join('');
+  if(cur) sel.value = cur;
+}
+function onBulkStatusChange(){
+  const s = document.getElementById('bulk-status').value;
+  const dateEl = document.getElementById('bulk-approvedate');
+  if(s==='Approved' && !dateEl.value) dateEl.value = fmtDate(new Date());
+}
+async function applyBulkUpdate(){
+  const ids = Array.from(selectedWIds);
+  if(!ids.length) return;
+  const status = document.getElementById('bulk-status').value;
+  const approveDate = document.getElementById('bulk-approvedate').value;
+  if(!status){ alert('⚠️ नयाँ Status छान्नुहोस्।'); return; }
+  if(status==='Approved' && !approveDate){ alert('⚠️ Approved राख्दा स्वीकृति मिति अनिवार्य छ।'); return; }
+  if(!confirm(ids.length + ' जना कामदारको Status "'+status+'"'+(approveDate?' (स्वीकृति मिति: '+approveDate+')':'')+' मा बदल्ने हो?')) return;
+  const r = await api('bulkupdate', { ids, status, approveDate }, null, true);
+  if(r.ok){
+    (r.updated||[]).forEach(uw=>{ const i=workers.findIndex(x=>x.id===uw.id); if(i>=0) workers[i]=uw; });
+    selectedWIds.clear();
+    document.getElementById('bulk-status').value='';
+    document.getElementById('bulk-approvedate').value='';
+    renderAll();
+    alert('✅ ' + (r.updated||[]).length + ' जना अपडेट भयो।' + (r.notFound&&r.notFound.length? ' ('+r.notFound.length+' जना भेटिएन — पहिले नै मेटिएको हुन सक्छ, Refresh गर्नुहोस्)':''));
+  } else if(r.error==='ROLE_STATUS_FORBIDDEN'){
+    alert('⛔ तपाईंको भूमिकाले यो Status राख्न मिल्दैन।\nअनुमति प्राप्त Status: '+(r.allowed||[]).join(', '));
+  } else if(r.error==='MISSING_APPROVE_DATE'){
+    alert('⚠️ Approved राख्दा स्वीकृति मिति अनिवार्य छ।');
   } else {
-    document.getElementById('fwd-box').classList.add('hidden');
-    document.getElementById('btn-reject').classList.add('hidden');
+    alert('⚠️ भएन: '+(r.error||''));
   }
-
-  applyModalPerms();
-  document.getElementById('m-steps').innerHTML=stageStepper(c.stage);
-  document.getElementById('docs-box').classList.remove('hidden');
-  document.getElementById('hist-box').classList.remove('hidden');
-  setupDocButtons(c, isOwner);
-  loadHistory(c.passport);
-  loadDocs(c.passport);
-  document.getElementById('modal').classList.add('show');
 }
-function applyModalPerms(){
-  // पैसा edit — accounts/admin मात्र
-  const money=(ROLE==='admin'||ROLE==='accounts');
-  document.getElementById('money-fields').style.display = money?'':'none';
-  // कागजात — documentation/shram/admin
-  const docs=(ROLE==='admin'||ROLE==='documentation'||ROLE==='shram'||ROLE==='reception');
-  document.getElementById('doc-fields').style.display = docs?'':'none';
+
+// ================= ACTION-NEEDED (🔔 पूरा गर्नुपर्ने) =================
+function pendingAlertList(){
+  const out = [];
+  workers.forEach(w=>{
+    if(w.status!=='Approved') return;
+    const gaps = [];
+    const role = session && session.role;
+    if(role==='receptionist'){
+      if(!w.nepalAddress) gaps.push('नेपाल ठेगाना');
+      if(!w.contactAddress) gaps.push('सम्पर्क व्यक्ति');
+    } else if(role==='documentation'){
+      if(!w.departDate) gaps.push('उडान मिति');
+      if(!w.arrivedDate) gaps.push('विदेश पुगेको मिति');
+    } else {
+      if(!w.nepalAddress) gaps.push('नेपाल ठेगाना');
+      if(!w.contactAddress) gaps.push('सम्पर्क व्यक्ति');
+      if(!w.departDate) gaps.push('उडान मिति');
+      if(!w.arrivedDate) gaps.push('विदेश पुगेको मिति');
+    }
+    if(gaps.length) out.push({ w, gaps });
+  });
+  out.sort((a,b)=>String(a.w.approveDate||'').localeCompare(String(b.w.approveDate||'')));
+  return out;
 }
-function closeModal(){ document.getElementById('modal').classList.remove('show'); }
+function openAlertsTab(){
+  switchTabById('tab-alerts');
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  const btn = document.getElementById('alert-tab-btn'); if(btn) btn.classList.add('active');
+}
+function renderAlerts(){
+  const list = pendingAlertList();
+  const tabBtn = document.getElementById('alert-tab-btn');
+  if(tabBtn) tabBtn.innerHTML = '🔔 पूरा गर्नुपर्ने' + (list.length ? ` <span style="background:#dc2626;color:#fff;border-radius:10px;padding:1px 8px;font-size:12px;margin-left:2px;">${list.length}</span>` : '');
+  const hb = document.getElementById('alert-header-badge');
+  if(hb){
+    if(list.length){ hb.style.display='inline-block'; hb.textContent = '🔔 ' + list.length + ' पूरा गर्नुपर्ने'; }
+    else hb.style.display='none';
+  }
+  const area = document.getElementById('alert-area');
+  if(!area) return;
+  if(!list.length){ area.innerHTML = '<p style="color:var(--muted);">✅ सबै विवरण पूरा भएका छन्।</p>'; return; }
+  area.innerHTML = `<div style="overflow-x:auto;"><table><thead><tr><th>Name (Passport)</th><th>Country / Company</th><th>लट नं</th><th>स्वीकृति मिति</th><th>पूरा गर्नुपर्ने</th><th></th></tr></thead><tbody>` +
+    list.map(({w,gaps})=>`<tr>
+      <td>${w.name}<br><small style="color:var(--muted)">${w.passport}</small></td>
+      <td>${w.country}<br><small>${w.company}</small></td>
+      <td>${w.lotNo||'-'}</td>
+      <td>${w.approveDate||'-'}</td>
+      <td>${gaps.map(g=>`<span class="badge s-rejected" style="margin-right:4px;">${g}</span>`).join('')}</td>
+      <td><button class="btn btn-sm" onclick="openWModal('${w.id}')">पूरा गर्नुहोस्</button></td>
+    </tr>`).join('') +
+    `</tbody></table></div>`;
+}
 
-// ============ कागजात (Documents) ============
-const DOC_CATEGORIES = ['Passport','Visa','English Employment Contract','Nepali Employment Contract','Certificate','Photo','Police Report','Medical Report','Insurance'];
-let uploadTargetPassport = null, uploadTargetCategory = null;
+// अघिल्लो आ.व.मा स्वीकृति लिएर हालको आ.व.मा उडेको हो कि?
+function gShort(g){ return g==='Male'?'M':(g==='Female'?'F':(g||'-')); }
+function isCarryOver(w){
+  if(!w.departDate || !w.approveDate) return false;
+  const fy = currentFY();
+  return inFY(w.departDate, fy) && !inFY(w.approveDate, fy);
+}
 
-function setupDocButtons(c, isOwner){
-  const box = document.getElementById('doc-buttons'); box.innerHTML='';
-  DOC_CATEGORIES.forEach(function(cat){
-    const b=document.createElement('button');
-    b.type='button'; b.className='btn btn-sm btn-ghost';
-    b.textContent='📤 '+cat;
-    b.disabled = !isOwner;
-    b.onclick=function(){ triggerUpload(c.passport, cat); };
-    box.appendChild(b);
+function openWModal(id){
+  editingWId = id;
+  const w = workers.find(x=>x.id===id);
+  if(!w) return;
+  document.getElementById('w-modal-title').textContent = w.name + ' — विवरण / संशोधन';
+  document.getElementById('e-name').value = w.name;
+  document.getElementById('e-passport').value = w.passport;
+  document.getElementById('e-age').value = w.age||'';
+  document.getElementById('e-gender').value = w.gender||'';
+  document.getElementById('e-lotno').value = w.lotNo||'';
+  document.getElementById('e-newsdate').value = w.newsDate||'';
+  document.getElementById('e-issuedate').value = w.issueDate||'';
+  document.getElementById('e-visano').value = w.visaNo||'';
+  document.getElementById('e-country').value = w.country||'';
+  document.getElementById('e-company').value = w.company||'';
+  document.getElementById('e-visaprof').value = w.visaProfession||'';
+  document.getElementById('e-demandprof').value = w.demandProfession||'';
+  document.getElementById('e-orientation').value = w.orientation||'';
+  document.getElementById('e-medical').value = w.medical||'';
+  // भूमिका अनुसार Status dropdown मा उपलब्ध विकल्प (हालको status सधैँ देखिन्छ)
+  const STATUS_LABELS = {Entry:'Entry (दर्ता मात्र)', Upload:'Upload (FEIMS मा)', Submitted:'Submitted (पेश गरिएको)', Approved:'Approved (श्रम स्वीकृति)', Rejected:'Rejected', Cancel:'Cancel'};
+  const curStatus = w.status||'Entry';
+  const allowedSet = new Set(allowedStatuses()); allowedSet.add(curStatus);
+  const statusSel = document.getElementById('e-status');
+  statusSel.innerHTML = ['Entry','Upload','Submitted','Approved','Rejected','Cancel']
+    .filter(s=>allowedSet.has(s)).map(s=>`<option value="${s}">${STATUS_LABELS[s]}</option>`).join('');
+  statusSel.value = curStatus;
+  document.getElementById('e-approvedate').value = w.approveDate||'';
+  document.getElementById('e-departdate').value = w.departDate||'';
+  document.getElementById('e-arriveddate').value = w.arrivedDate||'';
+  document.getElementById('e-nepal-addr').value = w.nepalAddress||'';
+  document.getElementById('e-contact-addr').value = w.contactAddress||'';
+  document.getElementById('e-remarks').value = w.remarks||'';
+  document.getElementById('w-modal-meta').textContent = 'दर्ता: ' + (w.createdAt||'');
+  loadHistory(id);
+  document.getElementById('w-modal').style.display='flex';
+}
+function closeWModal(){ document.getElementById('w-modal').style.display='none'; editingWId=null; }
+
+function onStatusChange(){
+  const s = document.getElementById('e-status').value;
+  const ad = document.getElementById('e-approvedate');
+  if(s==='Approved' && !ad.value){
+    ad.value = fmtDate(new Date());
+  }
+}
+
+async function loadHistory(id){
+  document.getElementById('w-history').innerHTML = '<div style="color:var(--muted)">लोड हुँदैछ...</div>';
+  const r = await api('getlog', { id });
+  if(editingWId !== id) return;
+  const log = (r.ok && r.log ? r.log : []).reverse();
+  document.getElementById('w-history').innerHTML = log.map(l=>
+    `<div class="history-item"><b>${l.time}</b> (${l.user}) — ${l.action}: ${l.detail}</div>`
+  ).join('') || '<div style="color:var(--muted)">कुनै इतिहास छैन</div>';
+}
+
+function saveWorker(){
+  const w = workers.find(x=>x.id===editingWId);
+  if(!w) return;
+  const passport = cleanPassport(document.getElementById('e-passport').value);
+  if(!validPassport(passport)){ alert(PP_ERROR); return; }
+  const status = document.getElementById('e-status').value;
+  const approveDate = document.getElementById('e-approvedate').value;
+  if(status==='Approved' && !approveDate){ alert('⚠️ Approved राख्दा स्वीकृति मिति अनिवार्य छ।'); return; }
+  const departDate = document.getElementById('e-departdate').value;
+  const updated = {
+    id:w.id, name:document.getElementById('e-name').value.trim(), passport,
+    age: document.getElementById('e-age').value?Number(document.getElementById('e-age').value):'',
+    gender: document.getElementById('e-gender').value,
+    lotNo: document.getElementById('e-lotno').value.trim(),
+    newsDate: document.getElementById('e-newsdate').value,
+    issueDate: document.getElementById('e-issuedate').value,
+    visaNo: document.getElementById('e-visano').value.trim(),
+    country: document.getElementById('e-country').value.trim(),
+    company: document.getElementById('e-company').value.trim(),
+    visaProfession: document.getElementById('e-visaprof').value.trim(),
+    demandProfession: document.getElementById('e-demandprof').value.trim(),
+    orientation: document.getElementById('e-orientation').value,
+    medical: document.getElementById('e-medical').value,
+    status, approveDate: status==='Approved'?approveDate:approveDate, departDate,
+    nepalAddress: document.getElementById('e-nepal-addr').value.trim(),
+    contactAddress: document.getElementById('e-contact-addr').value.trim(),
+    arrivedDate: document.getElementById('e-arriveddate').value || w.arrivedDate||'', contractEndDate: w.contractEndDate||'',
+    remarks: document.getElementById('e-remarks').value.trim()
+  };
+  // तुरुन्तै स्क्रिनमा
+  Object.assign(w, updated);
+  renderAll();
+  closeWModal();
+  api('updateworker', { worker: updated }).then(r=>{
+    if(r.ok && r.worker){ const i=workers.findIndex(x=>x.id===r.worker.id); if(i>=0) workers[i]=r.worker; renderAll(); }
+    else if(r.error==='DUPLICATE_PASSPORT'){ alert('⚠️ पासपोर्ट अर्को कामदारमा छ: '+(r.workerName||'')); refreshData(false); }
+    else if(r.error==='ROLE_STATUS_FORBIDDEN'){ alert('⛔ तपाईंको भूमिकाले यो Status राख्न मिल्दैन।\nअनुमति प्राप्त Status: '+(r.allowed||[]).join(', ')); refreshData(false); }
+    else if(r.error){ alert('⚠️ सेभ भएन: '+r.error); refreshData(false); }
   });
 }
-function triggerUpload(passport, category){
-  uploadTargetPassport = passport; uploadTargetCategory = category;
-  document.getElementById('doc-file-input').click();
+async function deleteWorker(){
+  if(!isAdmin()) return;
+  if(!confirm('यो रेकर्ड मेटाउने हो?')) return;
+  const r = await api('deleteworker', { id: editingWId }, null, true);
+  if(r.ok){ workers = workers.filter(x=>x.id!==editingWId); closeWModal(); renderAll(); }
 }
-document.getElementById('doc-file-input').addEventListener('change', async function(e){
-  const file = e.target.files[0]; if(!file) return;
-  if(file.size > 8*1024*1024){ alert('फाइल धेरै ठूलो छ (8MB भन्दा सानो राख्नुहोस्)।'); e.target.value=''; return; }
-  const reader = new FileReader();
-  reader.onload = async function(ev){
-    const base64 = ev.target.result.split(',')[1];
-    document.getElementById('doc-list').innerHTML = '<span class="note">⏳ अपलोड हुँदैछ...</span>';
-    const r = await call('uploadDoc', {passport:uploadTargetPassport, category:uploadTargetCategory, filename:file.name, mimeType:file.type, base64Data:base64});
-    if(r.ok){ loadDocs(uploadTargetPassport); }
-    else alert('अपलोड भएन: '+(r.error||'?'));
+
+// ================= PRE-APPROVAL =================
+document.getElementById('pre-form').addEventListener('submit', async function(e){
+  e.preventDefault();
+  const positions = gatherPositions();
+  if(positions.length===0){ alert('कम्तीमा एउटा पद थप्नुहोस्।'); return; }
+  let totM=0, totF=0;
+  positions.forEach(p=>{ totM+=p.m; totF+=p.f; });
+  const p = {
+    approvalDate: document.getElementById('p-date').value,
+    lotNo: document.getElementById('p-lotno').value.trim(),
+    country: document.getElementById('p-country').value.trim(),
+    company: document.getElementById('p-company').value.trim(),
+    maleCount: totM,
+    femaleCount: totF,
+    expiryDate: document.getElementById('p-expiry').value,
+    salary: positions.map(x=>x.name+': '+x.salary).join(' | '),  // सारांश (सबै पदको तलब)
+    costExpense: document.getElementById('p-cost').value.trim(),
+    professions: JSON.stringify(positions),  // पूरा पद विवरण (नाम, M/F, तलब)
+    contractYears: document.getElementById('p-contract-years').value.trim() || '2',
+    remarks: document.getElementById('p-remarks').value.trim()
   };
-  reader.readAsDataURL(file);
-  e.target.value='';
+  const r = await api('addpre', { pre: p }, null, true);
+  if(r.ok){ pres.push(r.pre); this.reset(); posRowSeq=0; document.getElementById('p-positions').innerHTML=''; addPositionRow(); recomputePosTotals(); renderAll(); alert('✅ दर्ता भयो।'); }
 });
-async function loadDocs(passport){
-  const el = document.getElementById('doc-list');
-  el.innerHTML = '<span class="note">लोड हुँदैछ...</span>';
-  const r = await call('listDocs', {passport:passport});
-  if(!r.ok){ el.innerHTML = '<span class="note">कागजात लोड भएन।</span>'; return; }
-  if(!r.docs || !r.docs.length){ el.innerHTML='<span class="note">अझै कुनै कागजात अपलोड भएको छैन।</span>'; return; }
-  el.innerHTML = r.docs.map(function(d){ return '<div>📄 <a href="'+d.url+'" target="_blank">'+d.name+'</a></div>'; }).join('');
+
+// ===== पद विवरण (dynamic rows) =====
+let posRowSeq = 0;
+function addPositionRow(name, m, f, salary){
+  const id = ++posRowSeq;
+  const div = document.createElement('div');
+  div.className = 'pos-row';
+  div.id = 'pos-'+id;
+  div.style.cssText = 'display:flex;gap:6px;margin-bottom:6px;align-items:center;';
+  div.innerHTML = `
+    <input type="text" class="form-control pos-name" placeholder="पद" value="${name||''}" style="flex:2;margin:0;">
+    <input type="number" class="form-control pos-m" placeholder="पु" min="0" value="${m||0}" style="width:60px;margin:0;" oninput="recomputePosTotals()" title="पुरुष">
+    <input type="number" class="form-control pos-f" placeholder="म" min="0" value="${f||0}" style="width:60px;margin:0;" oninput="recomputePosTotals()" title="महिला">
+    <input type="text" class="form-control pos-salary" placeholder="तलब" value="${salary||''}" style="flex:1;margin:0;" title="मासिक तलब">
+    <button type="button" onclick="removePositionRow(${id})" style="background:#dc2626;color:#fff;border:none;border-radius:5px;width:30px;height:34px;cursor:pointer;" title="हटाउने">✕</button>`;
+  document.getElementById('p-positions').appendChild(div);
+}
+function removePositionRow(id){
+  const el = document.getElementById('pos-'+id);
+  if(el) el.remove();
+  recomputePosTotals();
+}
+function recomputePosTotals(){
+  let m=0, f=0;
+  document.querySelectorAll('#p-positions .pos-row').forEach(r=>{
+    m += Number(r.querySelector('.pos-m').value)||0;
+    f += Number(r.querySelector('.pos-f').value)||0;
+  });
+  document.getElementById('p-male').value = m;
+  document.getElementById('p-female').value = f;
+}
+function gatherPositions(){
+  const out = [];
+  document.querySelectorAll('#p-positions .pos-row').forEach(r=>{
+    const name = r.querySelector('.pos-name').value.trim();
+    const m = Number(r.querySelector('.pos-m').value)||0;
+    const f = Number(r.querySelector('.pos-f').value)||0;
+    const salary = r.querySelector('.pos-salary').value.trim();
+    if(name || m || f || salary) out.push({name, m, f, salary});
+  });
+  return out;
+}
+function expiryCell(d){
+  if(!d) return '-';
+  const exp = new Date(d), today = new Date();
+  const diff = Math.floor((exp - today)/86400000);
+  if(diff < 0) return `<span class="exp-over">${d} (सकियो!)</span>`;
+  if(diff <= 60) return `<span class="exp-warn">${d} (${diff} दिन)</span>`;
+  return d;
+}
+function onPreManualSearch(){
+  // म्यानुअल खोज्दा कार्ड फिल्टर हट्ने
+  if(preCardFY){ preCardFY = null; document.getElementById('pre-filter-banner').classList.remove('show'); document.querySelectorAll('.clickable-card').forEach(c=>c.classList.remove('card-active')); }
+  renderPres();
+}
+function clearPreFilter(){
+  preCardFY = null;
+  document.getElementById('pre-filter-banner').classList.remove('show');
+  document.querySelectorAll('.clickable-card').forEach(c=>c.classList.remove('card-active'));
+  renderPres();
 }
 
-// ============ यात्रा (History) ============
-async function loadHistory(passport){
-  const el = document.getElementById('hist-list');
-  el.innerHTML = '<span class="note">लोड हुँदैछ...</span>';
-  const r = await call('history', {passport:passport});
-  if(!r.ok || !r.history || !r.history.length){ el.innerHTML='<span class="note">कुनै इतिहास छैन।</span>'; return; }
-  const rows = r.history.slice().reverse();
-  el.innerHTML = rows.map(function(h){
-    let icon = '📝'; if(h.action==='FORWARD') icon='➡️'; else if(h.action==='REJECT') icon='❌'; else if(h.action==='CREATE') icon='✨'; else if(h.action==='DOCUMENT') icon='📎'; else if(h.action==='STAGE') icon='🔄';
-    return '<div style="padding:5px 0;border-bottom:1px solid var(--line);">'+icon+' <b>'+h.detail+'</b><br><span style="font-size:11px;color:var(--muted);">'+h.user+' — '+h.time+'</span></div>';
-  }).join('');
+function renderPres(){
+  const q = (document.getElementById('p-search').value||'').toLowerCase();
+  // preCardFY सेट भए त्यही आ.व.को मात्र; नभए सबै (POA expiry हेर्न) — नयाँ माथि
+  const banner = document.getElementById('pre-filter-banner');
+  if(preCardFY){
+    document.getElementById('pre-filter-label').innerHTML = `<b>Pre-Permission</b> — आ.व. <b>${preCardFY.label}</b> मा`;
+    banner.classList.add('show');
+  } else if(banner){
+    banner.classList.remove('show');
+  }
+  const rows = pres.filter(p =>
+    (!preCardFY || inFY(p.approvalDate, preCardFY))
+    && (!q || (p.country||'').toLowerCase().includes(q) || (p.company||'').toLowerCase().includes(q) || String(p.lotNo||'').toLowerCase().includes(q))
+  ).sort((a,b)=>(b.approvalDate||'').localeCompare(a.approvalDate||''));
+  // लट अनुसार प्रयोग भएको (श्रम स्वीकृति लिएका) — बाँकी कोटा गणना
+  const normLot = v => String(v==null?'':v).trim().replace(/\.0+$/,'');
+  const usedByLot = {};
+  workers.forEach(w=>{
+    if(w.status!=='Approved') return;
+    const L=normLot(w.lotNo); if(!L) return;
+    if(!usedByLot[L]) usedByLot[L]={M:0,F:0};
+    if(w.gender==='Female') usedByLot[L].F++; else usedByLot[L].M++;
+  });
+  document.getElementById('p-table').innerHTML = rows.map(p=>{
+    const L=normLot(p.lotNo);
+    const dM=Number(p.maleCount)||0, dF=Number(p.femaleCount)||0;
+    const u=usedByLot[L]||{M:0,F:0};
+    const avM=Math.max(0,dM-u.M), avF=Math.max(0,dF-u.F), avT=avM+avF;
+    const avColor = avT>0 ? '#15803d' : '#64748b';
+    return `
+    <tr>
+      <td>${p.approvalDate||'-'}<br><small style="color:var(--info)">${nepaliMonth(p.approvalDate)}</small></td>
+      <td>${p.lotNo||'-'}</td><td>${p.country}</td><td>${p.company}</td>
+      <td>${p.maleCount}</td><td>${p.femaleCount}</td><td><b>${dM+dF}</b></td>
+      <td style="font-weight:700;color:${avColor};">${avM}M / ${avF}F <b>(${avT})</b></td>
+      <td>${expiryCell(p.expiryDate)}</td>
+      <td><button class="btn btn-sm" onclick="openPModal('${p.id}')">View</button></td>
+    </tr>`;
+  }).join('') || '<tr><td colspan="10" style="text-align:center;color:var(--muted)">कुनै रेकर्ड छैन</td></tr>';
 }
-
-async function doForward(){
-  if(!editing) return;
-  const toDept = document.getElementById('fwd-dept').value;
-  if(!toDept) return;
-  const r = await call('forward', {passport:editing.passport, toDept:toDept});
-  if(r.ok){ closeModal(); await refresh(); alert('✅ '+DEPT_LABELS[toDept]+' लाई पठाइयो।'); }
-  else alert('पठाउन सकिएन: '+(r.error||'?'));
+function openPModal(id){
+  editingPId = id;
+  const p = pres.find(x=>x.id===id);
+  if(!p) return;
+  document.getElementById('pe-date').value = p.approvalDate||'';
+  document.getElementById('pe-lotno').value = p.lotNo||'';
+  document.getElementById('pe-country').value = p.country||'';
+  document.getElementById('pe-company').value = p.company||'';
+  document.getElementById('pe-male').value = p.maleCount||0;
+  document.getElementById('pe-female').value = p.femaleCount||0;
+  document.getElementById('pe-expiry').value = p.expiryDate||'';
+  document.getElementById('pe-cost').value = (p.costExpense!==undefined && p.costExpense!==null) ? p.costExpense : '';
+  document.getElementById('pe-remarks').value = p.remarks||'';
+  document.getElementById('p-modal').style.display='flex';
 }
-async function doReject(){
-  if(!editing) return;
-  const reason = prompt('Reject गर्ने कारण लेख्नुहोस् (अनिवार्य):');
-  if(!reason || !reason.trim()){ alert('कारण अनिवार्य छ।'); return; }
-  const r = await call('reject', {passport:editing.passport, reason:reason.trim()});
-  if(r.ok){ closeModal(); await refresh(); alert('❌ फिर्ता पठाइयो।'); }
-  else alert('भएन: '+(r.error||'?'));
-}
-
-async function saveCand(){
-  const c = {
-    passport:document.getElementById('m-passport').value.trim(),
-    name:document.getElementById('m-name').value.trim(),
-    age:document.getElementById('m-age').value.trim(),
-    gender:document.getElementById('m-gender').value,
-    phone:document.getElementById('m-phone').value.trim(),
-    source:document.getElementById('m-source').value,
-    referredBy:document.getElementById('m-referredby').value.trim(),
-    country:document.getElementById('m-country').value.trim(),
-    company:document.getElementById('m-company').value.trim(),
-    lotNo:document.getElementById('m-lotno').value.trim(),
-    demandProfession:document.getElementById('m-profession').value.trim(),
-    stage:document.getElementById('m-stage').value,
-    medical:document.getElementById('m-medical').value,
-    orientation:document.getElementById('m-orientation').value,
-    visaNo:document.getElementById('m-visano').value.trim(),
-    totalAmount:document.getElementById('m-total').value.trim(),
-    received:document.getElementById('m-received').value.trim(),
-    paid:document.getElementById('m-paid').value.trim(),
-    remarks:document.getElementById('m-remarks').value.trim()
+function closePModal(){ document.getElementById('p-modal').style.display='none'; editingPId=null; }
+function savePre(){
+  const p = pres.find(x=>x.id===editingPId);
+  if(!p) return;
+  const updated = {
+    id:p.id,
+    approvalDate: document.getElementById('pe-date').value,
+    lotNo: document.getElementById('pe-lotno').value.trim(),
+    country: document.getElementById('pe-country').value.trim(),
+    company: document.getElementById('pe-company').value.trim(),
+    maleCount: Number(document.getElementById('pe-male').value)||0,
+    femaleCount: Number(document.getElementById('pe-female').value)||0,
+    expiryDate: document.getElementById('pe-expiry').value,
+    salary: p.salary||'', costExpense: document.getElementById('pe-cost').value.trim(),
+    professions: p.professions||'', contractYears: p.contractYears||'2',
+    foreignAddress: p.foreignAddress||'',
+    remarks: document.getElementById('pe-remarks').value.trim()
   };
-  if(!c.passport||!c.name){ alert('पासपोर्ट र नाम अनिवार्य।'); return; }
-  const r = await call('save', {candidate:c});
-  if(r.ok){ closeModal(); await refresh(); }
-  else alert('सुरक्षित भएन: '+(r.error||'?'));
+  Object.assign(p, updated);
+  renderAll(); closePModal();
+  api('updatepre', { pre: updated }).then(r=>{
+    if(!r.ok){ alert('⚠️ सेभ भएन: '+(r.error||'')); refreshData(false); }
+  });
+}
+async function deletePre(){
+  if(!isAdmin()) return;
+  if(!confirm('यो पूर्व स्वीकृति मेटाउने हो?')) return;
+  const r = await api('deletepre', { id: editingPId }, null, true);
+  if(r.ok){ pres = pres.filter(x=>x.id!==editingPId); closePModal(); renderAll(); }
 }
 
-async function refresh(){
-  const r = await call('list');
-  if(r.ok){ DATA = unpack(r.rows); renderAll(); }
+// ================= REPORT =================
+function buildReportHTML(fy){
+  const s = fyStats(fy);
+  // month-wise (approved)
+  const mCount = {};
+  FY_MONTH_ORDER.forEach(m=>mCount[m]={M:0,F:0});
+  s.appIn.forEach(w=>{
+    const m = nepaliMonth(w.approveDate);
+    if(mCount[m]){ if(w.gender==='Female') mCount[m].F++; else mCount[m].M++; }
+  });
+  let mRows = FY_MONTH_ORDER.map((m,i)=>`<tr><td>${i+1}</td><td>${m}</td><td>${mCount[m].M}</td><td>${mCount[m].F}</td><td><b>${mCount[m].M+mCount[m].F}</b></td></tr>`).join('');
+  // country-wise (approved)
+  const cCount = {};
+  s.appIn.forEach(w=>{
+    const c = w.country||'—';
+    if(!cCount[c]) cCount[c]={M:0,F:0};
+    if(w.gender==='Female') cCount[c].F++; else cCount[c].M++;
+  });
+  const cKeys = Object.keys(cCount).sort();
+  let cRows = cKeys.map((c,i)=>`<tr><td>${i+1}</td><td>${c}</td><td>${cCount[c].M}</td><td>${cCount[c].F}</td><td><b>${cCount[c].M+cCount[c].F}</b></td></tr>`).join('') || '<tr><td colspan="5" style="text-align:center;">—</td></tr>';
+  // pre country-wise
+  const pC = {};
+  s.preIn.forEach(p=>{
+    const c = p.country||'—';
+    if(!pC[c]) pC[c]={M:0,F:0,lots:0};
+    pC[c].M += Number(p.maleCount)||0; pC[c].F += Number(p.femaleCount)||0; pC[c].lots++;
+  });
+  const pKeys = Object.keys(pC).sort();
+  let pRows = pKeys.map((c,i)=>`<tr><td>${i+1}</td><td>${c}</td><td>${pC[c].lots}</td><td>${pC[c].M}</td><td>${pC[c].F}</td><td><b>${pC[c].M+pC[c].F}</b></td></tr>`).join('') || '<tr><td colspan="6" style="text-align:center;">—</td></tr>';
+
+
+  return `
+    <h3 style="margin:12px 0 8px;">🧾 कुल संख्या (आ.व. ${fy.label})</h3>
+    <table class="report-table"><thead><tr><th>Description</th><th>Count</th><th>Male</th><th>Female</th></tr></thead><tbody>
+      <tr style="background:#fef3c7;"><td><b>Final Approval</b></td><td style="font-size:15px;"><b>${s.appIn.length}</b></td><td>${s.appM}</td><td>${s.appF}</td></tr>
+      <tr><td>Cancel</td><td><b>${s.cancel}</b></td><td>-</td><td>-</td></tr>
+      <tr><td>Rejected</td><td><b>${s.rejected}</b></td><td>-</td><td>-</td></tr>
+    </tbody></table>
+    <p style="font-size:12px;color:#555;margin:6px 0 0;">नोट: रद्द भएका कामदारको श्रम स्वीकृति विभागबाटै रद्द गरी कोटा फिर्ता लिइएकाले कर आधारमा समावेश गरिएको छैन।</p>
+
+    <h3 style="margin:16px 0 8px;">📋 इजाजतपत्र नवीकरणको लागि विवरण (आ.व. ${fy.label})</h3>
+    <table class="report-table"><thead><tr><th>Description</th><th>Count</th><th>Male</th><th>Female</th></tr></thead><tbody>
+      <tr style="background:#e0f2fe;"><td><b>Pre-Permission</b> (Lot ${s.preIn.length})<br><small style="color:#555;">पूर्व स्वीकृति लिएको संख्या</small></td><td><b>${s.preM+s.preF}</b></td><td>${s.preM}</td><td>${s.preF}</td></tr>
+      <tr style="background:#e0f2fe;"><td><b>Final Approval</b><br><small style="color:#555;">अन्तिम श्रम स्वीकृति लिएको संख्या</small></td><td><b>${s.appIn.length}</b></td><td>${s.appM}</td><td>${s.appF}</td></tr>
+      <tr style="background:#e0f2fe;"><td><b>Departure</b><br><small style="color:#555;">कामदार उडाएको संख्या</small></td><td><b>${s.flownAll}</b></td><td>${s.flownM}</td><td>${s.flownF}</td></tr>
+      <tr style="background:#e0f2fe;"><td><b>Departure Pending</b><br><small style="color:#555;">श्रम स्वीकृति लिएको तर उडाउन बाँकी संख्या</small></td><td><b>${s.pending}</b></td><td>${s.pendM}</td><td>${s.pendF}</td></tr>
+    </tbody></table>
+
+    <h3 style="margin:16px 0 8px;">📅 Final Approval — Month-wise</h3>
+    <table class="report-table"><thead><tr><th>S.N.</th><th>Month</th><th>M</th><th>F</th><th>Total</th></tr></thead>
+    <tbody>${mRows}<tr class="report-total"><td colspan="2">Total</td><td>${s.appM}</td><td>${s.appF}</td><td>${s.appIn.length}</td></tr></tbody></table>
+
+    <h3 style="margin:16px 0 8px;">🌍 Final Approval — Country-wise</h3>
+    <table class="report-table"><thead><tr><th>S.N.</th><th>Country</th><th>M</th><th>F</th><th>Total</th></tr></thead>
+    <tbody>${cRows}<tr class="report-total"><td colspan="2">Total</td><td>${s.appM}</td><td>${s.appF}</td><td>${s.appIn.length}</td></tr></tbody></table>
+
+    <h3 style="margin:16px 0 8px;">🌍 Pre-Permission</h3>
+    <table class="report-table"><thead><tr><th>S.N.</th><th>Country</th><th>Lot</th><th>M</th><th>F</th><th>Total</th></tr></thead>
+    <tbody>${pRows}<tr class="report-total"><td colspan="2">Total</td><td>${s.preIn.length}</td><td>${s.preM}</td><td>${s.preF}</td><td>${s.preM+s.preF}</td></tr></tbody></table>`;
 }
 
-// ============ Users (admin) ============
-async function loadUsers(){
-  const r=await call('users');
-  if(r.ok){ document.getElementById('users-list').innerHTML = r.users.map(function(u){
-    return '<b>'+u.username+'</b> ('+u.role+')'+(u.proName?' — PRO: '+u.proName:'');
-  }).join('<br>'); }
+function buildQuotaHTML(fy){
+  const today = new Date().toISOString().slice(0,10);
+  const normLot = v => String(v==null?'':v).trim().replace(/\.0+$/,'');
+  // Use = कुनै पनि आ.व.को अन्तिम स्वीकृति (कोटा जहिले प्रयोग भए पनि घट्छ)
+  const appByLot = {};
+  workers.forEach(w=>{
+    if(w.status!=='Approved') return;
+    const L=normLot(w.lotNo); if(!L) return;
+    if(!appByLot[L]) appByLot[L]={M:0,F:0};
+    if(w.gender==='Female') appByLot[L].F++; else appByLot[L].M++;
+  });
+  // सबै पूर्व स्वीकृति लट — expiry आजसम्म नभएका मात्र (म्याद नसकिएका)
+  const activeLots = pres.filter(p=>{
+    const e = p.expiryDate;
+    return !e || e >= today;   // expiry खाली वा भविष्यमा → अझै सक्रिय
+  }).sort((a,b)=>String(a.expiryDate||'9999').localeCompare(String(b.expiryDate||'9999')));
+
+  const lotRows = activeLots.map(p=>{
+    const L = normLot(p.lotNo);
+    const dM=Number(p.maleCount)||0, dF=Number(p.femaleCount)||0, dT=dM+dF;
+    const a=(appByLot[L]||{M:0,F:0}); const aT=a.M+a.F;
+    const lM=Math.max(0,dM-a.M), lF=Math.max(0,dF-a.F), lT=lM+lF;
+    const leftColor = lT>0 ? '#15803d' : '#64748b';
+    // expiry नजिक (३० दिनभित्र) भए चेतावनी रङ
+    const daysLeft = p.expiryDate ? Math.round((new Date(p.expiryDate)-new Date(today))/86400000) : 999;
+    const expColor = daysLeft<=30 ? '#b45309' : '#64748b';
+    return `<tr><td><b>${L||'-'}</b>${p.company?'<br><small style="color:#64748b;">'+p.company+'</small>':''}</td>
+      <td>${dM}M / ${dF}F <b>(${dT})</b></td>
+      <td>${a.M}M / ${a.F}F <b>(${aT})</b></td>
+      <td style="font-weight:700;color:${leftColor};">${lM}M / ${lF}F <b>(${lT})</b></td>
+      <td style="color:${expColor};font-size:12px;">${p.expiryDate||'-'}${daysLeft<=30&&daysLeft>=0?'<br>('+daysLeft+' दिन बाँकी)':''}</td></tr>`;
+  }).join('') || '<tr><td colspan="5" style="text-align:center;">म्याद नसकिएका कुनै लट छैन</td></tr>';
+  return `
+    <table class="report-table"><thead><tr><th>Lot</th><th>माग (Demand)</th><th>Use</th><th>Available</th><th>म्याद (Expiry)</th></tr></thead>
+    <tbody>${lotRows}</tbody></table>
+    <p style="font-size:12px;color:#555;margin:6px 0 0;">म्याद नसकिएका (Expiry नआएका) लट मात्र देखाइएको छ। Available = माग − Use। M = पुरुष, F = महिला। म्याद ३० दिनभित्र सकिने लट सुन्तला रङमा देखिन्छ।</p>`;
 }
-async function addUser(){
-  const u={username:document.getElementById('nu-user').value.trim(), password:document.getElementById('nu-pass').value,
-    role:document.getElementById('nu-role').value, fullName:document.getElementById('nu-name').value.trim(),
-    proName:document.getElementById('nu-pro').value.trim()};
-  if(!u.username||!u.password){ alert('username र password चाहिन्छ।'); return; }
-  const r=await call('adduser',{u:u});
-  if(r.ok){ ['nu-user','nu-pass','nu-name','nu-pro'].forEach(function(k){document.getElementById(k).value='';}); loadUsers(); alert('✅ थपियो'); }
-  else alert('भएन: '+r.error);
+function renderReport(){
+  const fy = currentFY();
+  document.getElementById('rpt-fy').textContent = fy.label;
+  document.getElementById('report-area').innerHTML = buildReportHTML(fy);
+  const qfy = document.getElementById('quota-fy'); if(qfy) qfy.textContent = fy.label;
+  const qa = document.getElementById('quota-area'); if(qa) qa.innerHTML = buildQuotaHTML(fy);
 }
+// साझा print window helper
+// अघिल्लो आ.व.को स्वीकृति लिएर यस आ.व. उडेकाहरूको सूची
+function carryOverTable(fy){
+  const list = workers.filter(w=>w.status==='Approved' && inFY(w.departDate, fy) && w.approveDate && !inFY(w.approveDate, fy))
+    .sort((a,b)=>String(a.departDate).localeCompare(String(b.departDate)));
+  if(!list.length) return '';
+  const rows = list.map((w,i)=>`<tr><td>${i+1}</td><td>${w.name}</td><td>${w.passport}</td>
+    <td>${w.country||'-'}</td><td>${w.approveDate}</td><td>${w.departDate}</td></tr>`).join('');
+  return `<h3 style="margin:16px 0 6px;">⏮ Previous FY Approval — Departed This FY (${list.length})</h3>
+    <table><thead><tr><th>S.N.</th><th>Name</th><th>Passport No</th><th>Country</th><th>Approval Date</th><th>Departure Date</th></tr></thead>
+    <tbody>${rows}</tbody></table>
+    <p style="font-size:12px;color:#555;">यी कामदारको कर अघिल्लो आ.व.मै तिरिसकिएको हुनाले यस आ.व.को कर आधारमा समावेश छैन।</p>`;
+}
+
+// साझा: अनुसूची ६ ढाँचामा कामदार सूची render गर्ने
+function renderSchedule6(list, subtitle, periodLabel, mode){
+  const companyName = COMPANY_NAME || (document.querySelector('.header h1')||{}).textContent || '';
+  const normLot = v => String(v==null?'':v).trim().replace(/\.0+$/,'');
+  const lotInfo = {};
+  pres.forEach(p=>{
+    const L=normLot(p.lotNo); if(!L) return;
+    let posList=[];
+    try{ posList = JSON.parse(p.professions||'[]'); if(!Array.isArray(posList)) posList=[]; }catch(e){ posList=[]; }
+    var cst = (p.costExpense!==undefined && p.costExpense!==null) ? p.costExpense : '';
+    lotInfo[L]={ positions:posList, cost:cst, years:parseInt(p.contractYears,10)||2 };
+  });
+  function salaryFor(info, prof){
+    if(!info || !info.positions || !info.positions.length) return '';
+    const pl = info.positions;
+    const hit = pl.find(x => (x.name||'').toLowerCase().trim() === String(prof||'').toLowerCase().trim());
+    return (hit && hit.salary) || (pl[0] && pl[0].salary) || '';
+  }
+  const addYears = (d,y) => { if(!d) return ''; const x=new Date(d); if(isNaN(x)) return ''; x.setFullYear(x.getFullYear()+(y||2)); return x.toISOString().slice(0,10); };
+  const rows = list.map((w,i)=>{
+    const info = lotInfo[normLot(w.lotNo)] || {};
+    const arrived = w.arrivedDate || w.departDate || '';
+    const contractEnd = w.contractEndDate || addYears(w.departDate, info.years);
+    return `<tr>
+      <td>${i+1}</td>
+      <td style="text-align:left;">${w.name||''}</td>
+      <td>${w.nepalAddress||''}</td>
+      <td>${w.country||''}</td>
+      <td>${w.departDate||''}</td>
+      <td>${arrived}</td>
+      <td style="text-align:left;">${w.company||''}</td>
+      <td>${w.demandProfession||w.visaProfession||''}</td>
+      <td>${salaryFor(info, w.demandProfession)}</td>
+      <td>${contractEnd}</td>
+      <td>${mode==='auditor' ? (w.approveDate||'') : (w.contactAddress||'')}</td>
+      <td>${(info.cost!==undefined && info.cost!=='') ? info.cost : ''}</td>
+      <td>${w.remarks||''}</td>
+    </tr>`;
+  }).join('') || '<tr><td colspan="13">यस अवधिमा कामदार छैनन्।</td></tr>';
+
+  const win = window.open('', '_blank');
+  if(!win){ alert('Popup allow गर्नुहोस्।'); return; }
+  win.document.write(`<html><head><meta charset="UTF-8"><style>
+    body{font-family:'Segoe UI','Kalimati',sans-serif;padding:16px;color:#000;}
+    .title{text-align:center;font-weight:700;font-size:15px;}
+    .sub-title{text-align:center;font-weight:700;font-size:13px;margin-bottom:8px;}
+    .company{font-weight:700;font-size:13px;margin:4px 0;}
+    table{width:100%;border-collapse:collapse;font-size:10px;margin-top:6px;}
+    th,td{border:1px solid #000;padding:3px 4px;text-align:center;vertical-align:middle;}
+    th{background:#f0f0f0;font-size:10px;}
+    @media print{ thead{display:table-header-group;} @page{size:A4 landscape;margin:8mm;} }
+  </style></head><body>
+    <div class="title">नियमावलीको अनुसूची ६</div>
+    <div class="sub-title">${subtitle}</div>
+    <div class="company">RA : ${companyName}</div>
+    <div class="company">Lic No : ${COMPANY_LICENSE}</div>
+    <div class="company">${periodLabel}&nbsp;&nbsp;&nbsp;&nbsp;जम्मा कामदार : ${list.length}</div>
+    <table>
+      <thead><tr>
+        <th>सि.नं</th><th>कामदारको नाम</th><th>नेपालको ठेगाना</th><th>विदेशको ठेगाना</th>
+        <th>नेपालबाट प्रस्थान मिति</th><th>विदेश पुगेको मिति</th><th>रोजगारदाता संस्थाको नाम</th>
+        <th>विदेशमा गर्ने काम</th><th>मासिक तलब र सुविधा</th><th>करार समाप्त हुने मिति</th>
+        <th>${mode==='auditor' ? 'श्रम स्वीकृति लिएको मिति' : 'नेपालमा सम्पर्क व्यक्तिको नाम ठेगाना'}</th><th>लागत खर्च</th><th>कैफियत</th>
+      </tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+    <div style="margin-top:40px;display:flex;justify-content:space-between;font-size:12px;">
+      <div style="text-align:center;">
+        <div style="border-top:1px solid #000;width:200px;padding-top:4px;">इजाजतपत्रवालाको छाप</div>
+      </div>
+      <div style="text-align:center;">
+        <div style="border-top:1px solid #000;width:220px;padding-top:4px;">प्रमाणित गर्ने सञ्चालकको हस्ताक्षर</div>
+      </div>
+    </div>
+  </body></html>`);
+  win.document.close(); win.focus();
+  setTimeout(()=>win.print(), 500);
+}
+
+// 📋 अनुसूची ६ — पूरै आ.व.मा उडेका (पठाइएका) कामदार
+function printAnusuchi6(){
+  const fy = currentFY();
+  const list = workers.filter(w => w.status==='Approved' && inFY(w.departDate, fy))
+                      .sort((a,b)=>String(a.departDate).localeCompare(String(b.departDate)));
+  renderSchedule6(list, 'वैदेशिक रोजगारमा पठाइएका कामदारहरूको चालु आ.व. को अभिलेख', 'आ.व. : ' + fy.label);
+}
+
+// 🧾 Auditor — मासिक (१% कर) वा वार्षिक; अनुसूची ६ कै ढाँचामा
+function printAuditorList(){
+  const fy = currentFY();
+  // उडेका कामदार (कर उडान/स्वीकृति अनुसार) — यहाँ श्रम स्वीकृति (approveDate) आधार
+  let list = workers.filter(w => w.status==='Approved' && inFY(w.approveDate, fy));
+  const menu = 'कुन अवधिको अभिलेख print गर्ने?\n\n0 = पूरै आर्थिक वर्ष (Yearly)\n' +
+    FY_MONTH_ORDER.map((m,i)=>`${i+1} = ${m}`).join('\n');
+  const pick = prompt(menu, '0');
+  if(pick === null) return;
+  let periodLabel = 'आ.व. : ' + fy.label + ' (पूरै वर्ष)';
+  const pi = parseInt(pick, 10);
+  if(pi >= 1 && pi <= 12){
+    const mName = FY_MONTH_ORDER[pi-1];
+    list = list.filter(w => nepaliMonth(w.approveDate) === mName);
+    periodLabel = 'आ.व. : ' + fy.label + '  |  महिना : ' + mName;
+  }
+  list.sort((a,b)=>String(a.approveDate).localeCompare(String(b.approveDate)));
+  if(!list.length){ alert('यस अवधिमा श्रम स्वीकृति लिएको कुनै कामदार छैन।'); return; }
+  renderSchedule6(list, 'वैदेशिक रोजगारमा पठाइएका कामदारहरूको अभिलेख (कर प्रयोजन)', periodLabel, 'auditor');
+}
+
+function openReportWindow(title, bodyHtml){
+  const fy = currentFY();
+  const win = window.open('', '_blank');
+  if(!win){ alert('Popup allow गर्नुहोस्।'); return; }
+  win.document.write(`<html><head><meta charset="UTF-8"><style>
+    body{font-family:'Segoe UI',sans-serif;padding:24px;color:#222;}
+    h2{margin-bottom:2px;} .sub{color:#555;font-size:13px;}
+    .meta{font-size:12px;color:#666;margin-bottom:14px;border-bottom:2px solid #333;padding-bottom:8px;}
+    h3{margin:14px 0 6px;} table{width:100%;border-collapse:collapse;font-size:12px;margin-bottom:10px;}
+    th,td{border:1px solid #999;padding:5px 7px;} th{background:#eee;}
+    .report-total{background:#fde68a;font-weight:700;}
+    @media print{ thead{display:table-header-group;} }
+  </style></head><body>
+    <h2>Link Star Manpower Services Pvt. Ltd.</h2>
+    <div class="sub">Tokha-10, Kathmandu</div>
+    <div class="meta">${title} — आ.व. ${fy.label} (${fmtDate(fy.start)} — ${fmtDate(fy.end)}) | Print: ${new Date().toLocaleString()}</div>
+    ${bodyHtml}
+  </body></html>`);
+  win.document.close(); win.focus();
+  setTimeout(()=>win.print(), 400);
+}
+
+function printAuditReport(){
+  const fy = currentFY();
+  openReportWindow('श्रम स्वीकृति पूर्ण रिपोर्ट', buildReportHTML(fy));
+}
+function printWorker(){
+  const w = workers.find(x=>x.id===editingWId);
+  if(!w) return;
+  const win = window.open('', '_blank');
+  if(!win) return;
+  win.document.write(`<html><head><meta charset="UTF-8"><style>body{font-family:'Segoe UI',sans-serif;padding:24px;} .box{border:1px solid #999;border-radius:6px;padding:14px;line-height:2;}</style></head><body>
+    <h2>Link Star Manpower Services Pvt. Ltd.</h2><hr>
+    <div class="box">
+    <b>नाम:</b> ${w.name} | <b>पासपोर्ट:</b> ${w.passport} | <b>Age/Gender:</b> ${w.age||'-'} / ${gShort(w.gender)}<br>
+    <b>लट नं:</b> ${w.lotNo||'-'} | <b>भिसा नं:</b> ${w.visaNo||'-'}<br>
+    <b>देश:</b> ${w.country} | <b>कम्पनी:</b> ${w.company}<br>
+    <b>Profession (Visa/Demand):</b> ${w.visaProfession||'-'} / ${w.demandProfession||'-'}<br>
+    <b>Orientation:</b> ${w.orientation||'-'} | <b>Medical:</b> ${w.medical||'-'}<br>
+    <b>Status:</b> ${w.status} | <b>स्वीकृति मिति:</b> ${w.approveDate||'-'} (${nepaliMonth(w.approveDate)||'-'}) | <b>उडान:</b> ${w.departDate||'-'}${isCarryOver(w)?' <b>(अघिल्लो आ.व.को स्वीकृति)</b>':''}<br>
+    <b>कैफियत:</b> ${w.remarks||'-'}
+    </div></body></html>`);
+  win.document.close(); win.focus();
+  setTimeout(()=>win.print(), 400);
+}
+
+// ================= BACKUP =================
+function exportBackup(){
+  if(!isAdmin()) return;
+  const blob = new Blob([JSON.stringify({workers, pres, exportedAt:new Date().toISOString()},null,2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'shram-backup-'+new Date().toISOString().slice(0,10)+'.json'; a.click();
+  URL.revokeObjectURL(url);
+}
+
+// ================= INIT =================
+(async function init(){
+  if(!API_URL){ showScreen('setup'); return; }
+  const saved = sessionStorage.getItem(SS_KEY);
+  if(saved){
+    try{ session = JSON.parse(saved); initApp(); await refreshData(true); return; }
+    catch(e){ session = null; }
+  }
+  showScreen('login');
+})();
 </script>
 </body>
 </html>
