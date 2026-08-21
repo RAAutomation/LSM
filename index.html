@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="ne">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Link Star — एकीकृत कार्यालय प्रणाली</title>
+<style>
+  :root{
+    --brand:#1f4e79; --brand-2:#2e6da4; --plum:#8a2b5e; --gold:#c8942b;
+    --ink:#14233d; --muted:#6b7a90; --line:#e3e0d8; --paper:#f5f3 ee;
+    --paper:#f5f3ee; --card:#fff; --ok:#2f8f5b; --warn:#c77d1a; --danger:#c0392b;
+    --shadow:0 8px 24px -14px rgba(20,35,61,.3);
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'Segoe UI','Kalimati','Noto Sans Devanagari',sans-serif; background:var(--paper); color:var(--ink);}
+  .hidden{display:none !important;}
+
+  /* Login */
+  #login{min-height:100vh; display:grid; place-items:center; padding:20px;
+    background:radial-gradient(1000px 400px at 80% -10%, rgba(31,78,121,.12),transparent 60%), var(--paper);}
+  .login-card{background:var(--card); border:1px solid var(--line); border-radius:18px; box-shadow:var(--shadow);
+    padding:34px 30px; width:100%; max-width:390px;}
+  .login-card .seal{width:56px;height:56px;border-radius:14px;background:linear-gradient(150deg,var(--brand),var(--brand-2));
+    color:#fff;display:grid;place-items:center;font-size:26px;font-weight:800;margin-bottom:16px;}
+  .login-card h1{font-size:20px;} .login-card .sub{font-size:13px;color:var(--muted);margin:4px 0 20px;}
+
+  label{display:block;font-size:13px;font-weight:600;margin:0 0 5px;}
+  .inp{width:100%;box-sizing:border-box;padding:10px 12px;border:1px solid var(--line);border-radius:8px;font-size:14px;margin-bottom:14px;}
+  .inp:focus{outline:2px solid var(--brand-2);border-color:transparent;}
+  .btn{background:var(--brand);color:#fff;border:none;border-radius:8px;padding:11px 18px;font-size:14px;font-weight:700;cursor:pointer;}
+  .btn:hover{background:var(--brand-2);}
+  .btn-sm{padding:6px 12px;font-size:13px;}
+  .btn-ghost{background:#eef2f7;color:var(--brand);}
+  .btn-plum{background:var(--plum);}
+  .btn-gold{background:var(--gold);}
+
+  /* App shell */
+  header.top{background:linear-gradient(135deg,#12213b,var(--brand));color:#fff;padding:16px 22px;
+    display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;}
+  header .brand{display:flex;align-items:center;gap:12px;}
+  header .seal{width:42px;height:42px;border-radius:11px;background:rgba(255,255,255,.15);display:grid;place-items:center;font-size:20px;font-weight:800;}
+  header h1{font-size:18px;line-height:1.15;}
+  header .lic{font-size:11px;color:#cbd5e1;}
+  header .who{font-size:13px;text-align:right;}
+  header .who b{display:block;font-size:14px;}
+  header .who .role{font-size:11px;color:#cbd5e1;text-transform:uppercase;letter-spacing:.08em;}
+
+  .tabs{display:flex;gap:8px;padding:12px 22px 0;flex-wrap:wrap;background:var(--paper);}
+  .tab{padding:10px 18px;font-size:14px;font-weight:700;background:#e7e3da;border:none;border-radius:9px 9px 0 0;cursor:pointer;color:var(--ink);}
+  .tab.active{background:var(--card);color:var(--brand);box-shadow:0 -2px 0 var(--brand) inset;}
+
+  main{padding:18px 22px 40px;}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);padding:20px;margin-bottom:18px;}
+  .card h2{font-size:16px;margin-bottom:14px;}
+
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
+  .fg{margin-bottom:12px;min-width:0;}
+
+  /* Dashboard cards */
+  .dash{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-bottom:8px;}
+  .stat{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;box-shadow:var(--shadow);}
+  .stat .n{font-size:22px;font-weight:800;} .stat .l{font-size:11px;color:var(--muted);margin-top:2px;font-weight:600;}
+
+  table{width:100%;border-collapse:collapse;font-size:13px;}
+  th{background:#f0f4f8;text-align:left;padding:9px;border-bottom:2px solid var(--line);font-size:12px;color:var(--muted);}
+  td{padding:9px;border-bottom:1px solid var(--line);}
+  tr:hover td{background:#fafcff;}
+  .pill{font-size:11px;font-weight:700;padding:3px 9px;border-radius:999px;background:#eef2f7;color:var(--brand);}
+  .search{width:100%;box-sizing:border-box;padding:10px 14px;border:2px solid var(--brand);border-radius:8px;background:#eff6ff;font-size:14px;margin-bottom:14px;}
+
+  /* Stage stepper */
+  .steps{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0;}
+  .step{font-size:11px;padding:5px 10px;border-radius:999px;background:#eef2f7;color:var(--muted);font-weight:600;}
+  .step.done{background:#dcfce7;color:#166534;}
+  .step.now{background:var(--brand);color:#fff;}
+
+  .modal{display:none;position:fixed;inset:0;background:rgba(20,35,61,.45);z-index:100;place-items:center;padding:20px;}
+  .modal.show{display:grid;}
+  .modal-box{background:#fff;border-radius:16px;max-width:720px;width:100%;max-height:92vh;overflow:auto;padding:24px;}
+  .modal-box h3{font-size:18px;margin-bottom:14px;}
+  .row-actions{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap;}
+
+  .note{font-size:12px;color:var(--muted);}
+  .demo-flag{background:#12213b;color:#fff;text-align:center;font-size:11px;letter-spacing:.12em;padding:5px;text-transform:uppercase;}
+  @media(max-width:820px){.grid2,.grid3{grid-template-columns:1fr;}.dash{grid-template-columns:1fr 1fr 1fr;}}
+</style>
+</head>
+<body>
+
+<!-- API URL: deploy पछि यहाँ राख्नुहोस् -->
+<script>const FIXED_API_URL = 'https://script.google.com/macros/s/AKfycbzg5wMtJb7DAQYW_62-QrcLUr54FBTmMYDL8ZCR5L1VKZH99WTj8qI2OYfZV6f3dqdrSg/exec';</script>
+
+<!-- ===== LOGIN ===== -->
+<div id="login">
+  <div class="login-card">
+    <div class="seal">★</div>
+    <h1>Link Star — एकीकृत प्रणाली</h1>
+    <div class="sub">Tokha-10, Kathmandu · Lic 1025/068/069</div>
+    <label>प्रयोगकर्ता (Username)</label>
+    <input class="inp" id="lg-user" autocomplete="username">
+    <label>पासवर्ड (Password)</label>
+    <input class="inp" id="lg-pass" type="password" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
+    <button class="btn" style="width:100%" onclick="doLogin()">लगइन गर्नुहोस्</button>
+    <p class="note" id="lg-msg" style="margin-top:12px;color:var(--danger)"></p>
+    <p class="note" style="margin-top:14px">सुरुमा: <b>admin / admin123</b></p>
+  </div>
+</div>
+
+<!-- ===== APP ===== -->
+<div id="app" class="hidden">
+  <div class="demo-flag">टेस्ट संस्करण — Foundation · Link Star</div>
+  <header class="top">
+    <div class="brand">
+      <div class="seal">★</div>
+      <div>
+        <h1>Link Star Manpower — एकीकृत प्रणाली</h1>
+        <div class="lic">Tokha-10, Kathmandu · Lic 1025/068/069</div>
+      </div>
+    </div>
+    <div class="who">
+      <b id="who-name"></b><span class="role" id="who-role"></span>
+      <button class="btn btn-sm btn-ghost" style="margin-top:6px" onclick="logout()">बाहिरिनुहोस्</button>
+    </div>
+  </header>
+
+  <div class="tabs" id="tabs"></div>
+
+  <main>
+    <!-- Dashboard -->
+    <section id="tab-dash" class="tabpage">
+      <div class="dash" id="dash-cards"></div>
+      <div class="card">
+        <h2>चरण अनुसार कामदार (Pipeline)</h2>
+        <div id="pipeline"></div>
+      </div>
+    </section>
+
+    <!-- Candidates -->
+    <section id="tab-cand" class="tabpage hidden">
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:6px;">
+          <h2 style="margin:0">कामदार सूची</h2>
+          <button class="btn btn-sm" id="btn-new" onclick="openNew()">➕ नयाँ कामदार</button>
+        </div>
+        <input class="search" id="cand-search" placeholder="🔍 नाम, पासपोर्ट, देश, PRO, कम्पनी..." oninput="renderCand()">
+        <label style="display:flex;align-items:center;gap:7px;font-size:13px;font-weight:600;margin-bottom:12px;">
+          <input type="checkbox" id="cand-mine" onchange="renderCand()"> मेरो पालो (queue) मा भएका मात्र देखाउनुहोस्
+        </label>
+        <div id="bulk-bar" class="card hidden" style="background:#fff7ed;border-color:#fdba74;padding:10px 14px;margin-bottom:12px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+          <b id="bulk-count" style="color:var(--warn)"></b>
+          <select class="inp" id="bulk-stage" style="width:220px;margin:0;"></select>
+          <button class="btn btn-sm" onclick="applyBulkStage()">✅ सबैमा लागू गर्नुहोस्</button>
+          <button class="btn btn-sm btn-ghost" onclick="clearBulkSelection()">रद्द</button>
+        </div>
+        <div style="overflow:auto">
+          <table>
+            <thead><tr>
+              <th style="width:30px;"><input type="checkbox" id="cand-select-all" onchange="toggleSelectAll(this)"></th>
+              <th>नाम (Passport)</th><th>PRO / स्रोत</th><th>देश / कम्पनी</th>
+              <th>चरण (Stage)</th><th>हाल जिम्मामा</th><th id="th-money">हिसाब</th><th></th>
+            </tr></thead>
+            <tbody id="cand-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- Accounts -->
+    <section id="tab-acc" class="tabpage hidden">
+      <div class="card">
+        <h2>हिसाब-किताब</h2>
+        <input class="search" id="acc-search" placeholder="🔍 नाम वा पासपोर्ट..." oninput="renderAcc()">
+        <div style="overflow:auto">
+          <table>
+            <thead><tr><th>नाम (Passport)</th><th>देश</th><th>कुल रकम</th><th>प्राप्त</th><th>बाँकी</th><th></th></tr></thead>
+            <tbody id="acc-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- Users -->
+    <section id="tab-users" class="tabpage hidden">
+      <div class="card">
+        <h2>प्रयोगकर्ता व्यवस्थापन</h2>
+        <div id="users-list" class="note" style="margin-bottom:14px"></div>
+        <div class="grid3">
+          <div class="fg"><label>Username</label><input class="inp" id="nu-user"></div>
+          <div class="fg"><label>Password</label><input class="inp" id="nu-pass"></div>
+          <div class="fg"><label>भूमिका</label>
+            <select class="inp" id="nu-role">
+              <option value="reception">reception</option>
+              <option value="documentation">documentation</option>
+              <option value="shram">shram</option>
+              <option value="accounts">accounts</option>
+              <option value="pro">pro</option>
+              <option value="admin">admin</option>
+            </select></div>
+          <div class="fg"><label>पूरा नाम</label><input class="inp" id="nu-name"></div>
+          <div class="fg"><label>PRO नाम (pro भए मात्र — referredBy सँग मिल्ने)</label><input class="inp" id="nu-pro"></div>
+        </div>
+        <button class="btn btn-sm" onclick="addUser()">➕ थप्नुहोस्</button>
+      </div>
+    </section>
+  </main>
+</div>
+
+<!-- ===== CANDIDATE MODAL ===== -->
+<div class="modal" id="modal">
+  <div class="modal-box">
+    <h3 id="m-title">नयाँ कामदार</h3>
+    <div id="m-owner-badge" class="note" style="margin-bottom:8px;"></div>
+    <div class="steps" id="m-steps"></div>
+    <div class="grid3">
+      <div class="fg"><label>पासपोर्ट नं *</label><input class="inp" id="m-passport"></div>
+      <div class="fg"><label>नाम *</label><input class="inp" id="m-name"></div>
+      <div class="fg"><label>उमेर</label><input class="inp" id="m-age"></div>
+      <div class="fg"><label>लिङ्ग</label><select class="inp" id="m-gender"><option>Male</option><option>Female</option></select></div>
+      <div class="fg"><label>फोन</label><input class="inp" id="m-phone"></div>
+      <div class="fg"><label>स्रोत</label><select class="inp" id="m-source"><option>PRO</option><option>Direct</option></select></div>
+      <div class="fg"><label>PRO / रेफर गर्ने</label><input class="inp" id="m-referredby"></div>
+      <div class="fg"><label>देश</label><input class="inp" id="m-country"></div>
+      <div class="fg"><label>कम्पनी</label><input class="inp" id="m-company"></div>
+      <div class="fg"><label>लट नं</label><input class="inp" id="m-lotno"></div>
+      <div class="fg"><label>पद (Profession)</label><input class="inp" id="m-profession"></div>
+      <div class="fg"><label>चरण (Stage)</label><select class="inp" id="m-stage"></select></div>
+    </div>
+    <div class="grid3" id="doc-fields">
+      <div class="fg"><label>Medical</label><select class="inp" id="m-medical"><option value="">—</option><option>Yes</option><option>No</option></select></div>
+      <div class="fg"><label>Orientation</label><select class="inp" id="m-orientation"><option value="">—</option><option>Yes</option><option>No</option></select></div>
+      <div class="fg"><label>Visa नं</label><input class="inp" id="m-visano"></div>
+    </div>
+    <div class="grid3" id="money-fields">
+      <div class="fg"><label>कुल रकम</label><input class="inp" id="m-total"></div>
+      <div class="fg"><label>प्राप्त</label><input class="inp" id="m-received"></div>
+      <div class="fg"><label>भुक्तानी</label><input class="inp" id="m-paid"></div>
+    </div>
+    <div class="fg"><label>कैफियत</label><input class="inp" id="m-remarks"></div>
+
+    <div class="card" id="docs-box" style="background:#f8fafc;margin:14px 0;padding:14px;">
+      <label>📎 कागजात (Documents)</label>
+      <div id="doc-buttons" style="display:flex;flex-wrap:wrap;gap:8px;margin:8px 0;"></div>
+      <div id="doc-list" class="note"></div>
+    </div>
+
+    <div class="card" id="hist-box" style="background:#f8fafc;margin:14px 0;padding:14px;">
+      <label>📜 यात्रा (History)</label>
+      <div id="hist-list" class="note" style="margin-top:8px;max-height:180px;overflow:auto;"></div>
+    </div>
+
+    <div class="card" id="fwd-box" style="background:#f8fafc;margin:14px 0;padding:14px;">
+      <label>➡️ अर्को विभागलाई पठाउने (Forward)</label>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <select class="inp" id="fwd-dept" style="flex:1;min-width:160px;margin-bottom:0;"></select>
+        <button class="btn btn-plum btn-sm" onclick="doForward()">पठाउनुहोस्</button>
+      </div>
+    </div>
+    <div class="row-actions">
+      <button class="btn" onclick="saveCand()">💾 सुरक्षित गर्नुहोस्</button>
+      <button class="btn btn-ghost" onclick="closeModal()">रद्द</button>
+      <button class="btn" style="background:var(--danger)" id="btn-reject" onclick="doReject()">❌ Reject गर्नुहोस्</button>
+    </div>
+  </div>
+</div>
+<input type="file" id="doc-file-input" class="hidden">
+
+<script>
+// ============ राज्य ============
+let AUTH = {username:'', password:''};
+let ROLE = '', PRO_NAME = '';
+let STAGES = [], COLS = [], DATA = [];
+const api = FIXED_API_URL;
+
+async function call(action, extra){
+  const body = Object.assign({action, username:AUTH.username, password:AUTH.password}, extra||{});
+  const r = await fetch(api, {method:'POST', body:JSON.stringify(body)});
+  return await r.json();
+}
+
+// ============ Login ============
+async function doLogin(){
+  const u = document.getElementById('lg-user').value.trim();
+  const p = document.getElementById('lg-pass').value;
+  if(!api){ document.getElementById('lg-msg').textContent = 'API URL राखिएको छैन (FIXED_API_URL)।'; return; }
+  AUTH = {username:u, password:p};
+  const r = await call('list');
+  if(!r.ok){ document.getElementById('lg-msg').textContent = r.error==='AUTH' ? 'गलत username/password।' : ('त्रुटि: '+r.error); return; }
+  ROLE = r.role; PRO_NAME = r.proName||''; STAGES = r.stages; COLS = r.cols;
+  DATA = unpack(r.rows);
+  document.getElementById('login').classList.add('hidden');
+  document.getElementById('app').classList.remove('hidden');
+  document.getElementById('who-name').textContent = r.fullName || u;
+  document.getElementById('who-role').textContent = ROLE;
+  buildTabs(); buildStageSelect(); renderAll();
+}
+function logout(){ AUTH={username:'',password:''}; location.reload(); }
+
+function unpack(rows){
+  return rows.map(function(r){ const o={}; COLS.forEach(function(k,i){ o[k]=r[i]; }); return o; });
+}
+
+// ============ Tabs (role अनुसार) ============
+function buildTabs(){
+  const defs = [
+    {id:'dash', label:'📊 ड्यासबोर्ड', roles:['admin','reception','documentation','shram','accounts','pro']},
+    {id:'cand', label:'👥 कामदार', roles:['admin','reception','documentation','shram','accounts','pro']},
+    {id:'acc',  label:'💰 हिसाब', roles:['admin','accounts']},
+    {id:'users',label:'⚙️ प्रयोगकर्ता', roles:['admin']},
+  ];
+  const t = document.getElementById('tabs'); t.innerHTML='';
+  defs.filter(function(d){ return d.roles.indexOf(ROLE)>=0; }).forEach(function(d,i){
+    const b=document.createElement('button');
+    b.className='tab'+(i===0?' active':''); b.textContent=d.label;
+    b.id='tabbtn-'+d.id;
+    b.onclick=function(){ switchTab(d.id, b); };
+    t.appendChild(b);
+  });
+  // pro/reception/doc/shram लाई पैसा column लुकाउने
+  const showMoney = (ROLE==='admin'||ROLE==='accounts');
+  document.getElementById('th-money').style.display = showMoney?'':'none';
+  document.getElementById('btn-new').style.display = (ROLE==='pro')?'none':'';
+  updateQueueBadge();
+}
+function updateQueueBadge(){
+  if(ROLE==='admin' || ROLE==='pro') return;
+  const myQueue = DATA.filter(function(c){ return (c.owner||'reception')===ROLE; }).length;
+  const btn = document.getElementById('tabbtn-cand');
+  if(!btn) return;
+  const old = document.getElementById('queue-badge'); if(old) old.remove();
+  if(myQueue>0){
+    const badge = document.createElement('span');
+    badge.id='queue-badge';
+    badge.style.cssText='background:var(--danger);color:#fff;border-radius:999px;padding:1px 8px;font-size:11px;margin-left:6px;font-weight:800;';
+    badge.textContent = myQueue;
+    btn.appendChild(badge);
+  }
+}
+function switchTab(id, btn){
+  document.querySelectorAll('.tabpage').forEach(function(s){ s.classList.add('hidden'); });
+  document.getElementById('tab-'+id).classList.remove('hidden');
+  document.querySelectorAll('.tab').forEach(function(b){ b.classList.remove('active'); });
+  btn.classList.add('active');
+  if(id==='users') loadUsers();
+}
+function buildStageSelect(){
+  const s=document.getElementById('m-stage'); s.innerHTML='';
+  STAGES.forEach(function(st){ const o=document.createElement('option'); o.value=st; o.textContent=st; s.appendChild(o); });
+}
+
+// ============ Render ============
+function renderAll(){ renderDash(); renderCand(); renderAcc(); updateQueueBadge(); }
+
+function renderDash(){
+  const total=DATA.length;
+  const deployed=DATA.filter(function(c){return c.stage==='Deployed';}).length;
+  const preApp=DATA.filter(function(c){return c.stage==='Pre-Approval';}).length;
+  const finalApp=DATA.filter(function(c){return c.stage==='Final Labor Approval';}).length;
+  const visa=DATA.filter(function(c){return c.stage==='Visa Received'||c.stage==='Visa Processing';}).length;
+  const active=total-deployed;
+  const cards=[
+    ['कुल कामदार',total,'var(--brand)'],['सक्रिय',active,'var(--warn)'],
+    ['पूर्व स्वीकृति',preApp,'var(--plum)'],['भिसा',visa,'var(--brand-2)'],
+    ['अन्तिम स्वीकृति',finalApp,'var(--ok)'],['उडान (Deployed)',deployed,'var(--gold)']
+  ];
+  if(ROLE!=='admin' && ROLE!=='pro'){
+    const myQueue = DATA.filter(function(c){ return (c.owner||'reception')===ROLE; }).length;
+    const myRejects = DATA.filter(function(c){ return (c.owner||'reception')===ROLE && c.rejectFlag==='Yes'; }).length;
+    cards.unshift(['⚠️ Reject फर्किएको',myRejects,'var(--danger)']);
+    cards.unshift(['🔔 मेरो पालो (queue)',myQueue,'var(--plum)']);
+  }
+  document.getElementById('dash-cards').innerHTML = cards.map(function(c){
+    return '<div class="stat"><div class="n" style="color:'+c[2]+'">'+c[1]+'</div><div class="l">'+c[0]+'</div></div>';
+  }).join('');
+  // pipeline: प्रत्येक stage मा कति
+  const counts={}; STAGES.forEach(function(s){counts[s]=0;});
+  DATA.forEach(function(c){ if(counts[c.stage]!==undefined) counts[c.stage]++; });
+  document.getElementById('pipeline').innerHTML = '<div class="steps">'+STAGES.map(function(s,i){
+    return '<span class="step'+(counts[s]>0?' now':'')+'">'+(i+1)+'. '+s+' — <b>'+counts[s]+'</b></span>';
+  }).join('')+'</div>';
+}
+
+function stageStepper(current){
+  const idx = STAGES.indexOf(current);
+  return '<div class="steps">'+STAGES.map(function(s,i){
+    let cls='step'; if(i<idx)cls+=' done'; else if(i===idx)cls+=' now';
+    return '<span class="'+cls+'">'+(i+1)+'</span>';
+  }).join('')+'</div>';
+}
+
+function renderCand(){
+  const q=(document.getElementById('cand-search').value||'').toLowerCase();
+  const showMoney=(ROLE==='admin'||ROLE==='accounts');
+  const onlyMine = document.getElementById('cand-mine') && document.getElementById('cand-mine').checked;
+  let rows=DATA.filter(function(c){
+    return !q || (c.name||'').toLowerCase().includes(q) || (c.passport||'').toLowerCase().includes(q)
+      || (c.country||'').toLowerCase().includes(q) || (c.referredBy||'').toLowerCase().includes(q)
+      || (c.company||'').toLowerCase().includes(q);
+  });
+  if(onlyMine && ROLE!=='admin' && ROLE!=='pro') rows = rows.filter(function(c){ return (c.owner||'reception')===ROLE; });
+  rows.sort(function(a,b){ return String(b.createdAt||'').localeCompare(String(a.createdAt||'')); });
+  const canEdit = (ROLE!=='pro');
+  document.getElementById('cand-body').innerHTML = rows.map(function(c){
+    const bal=(Number(c.totalAmount)||0)-(Number(c.received)||0);
+    const money= showMoney ? '<td>बाँकी: '+bal.toLocaleString()+'</td>' : '';
+    const owner = c.owner||'reception';
+    const isMine = (owner===ROLE);
+    const canBulk = (ROLE==='admin' || owner===ROLE);
+    let ownerPill = '<span class="pill" style="background:'+(isMine?'#dcfce7':'#eef2f7')+';color:'+(isMine?'#166534':'var(--brand)')+';">'+(DEPT_LABELS[owner]||owner)+'</span>';
+    if(c.rejectFlag==='Yes') ownerPill += '<br><span class="note" style="color:var(--danger);font-weight:700;">⚠️ Reject फर्किएको</span>';
+    const chk = canBulk ? '<input type="checkbox" class="cand-chk" data-passport="'+c.passport+'" onchange="onRowCheck()">' : '';
+    return '<tr>'+
+      '<td>'+chk+'</td>'+
+      '<td><b>'+(c.name||'')+'</b><br><span class="note">'+(c.passport||'')+'</span></td>'+
+      '<td>'+(c.referredBy||'-')+'<br><span class="note">'+(c.source||'')+'</span></td>'+
+      '<td>'+(c.country||'-')+'<br><span class="note">'+(c.company||'')+'</span></td>'+
+      '<td><span class="pill">'+(c.stage||'-')+'</span></td>'+
+      '<td>'+ownerPill+'</td>'+
+      money+
+      '<td>'+(canEdit?'<button class="btn btn-sm btn-ghost" onclick="openEdit(\''+c.passport+'\')">खोल्नुहोस्</button>':'<span class="note">हेर्ने मात्र</span>')+'</td>'+
+    '</tr>';
+  }).join('') || '<tr><td colspan="8" style="text-align:center;color:var(--muted)">कुनै कामदार छैन</td></tr>';
+  document.getElementById('bulk-bar').classList.add('hidden');
+  document.getElementById('cand-select-all').checked=false;
+}
+
+// ============ Bulk Stage Update ============
+function toggleSelectAll(box){
+  document.querySelectorAll('.cand-chk').forEach(function(c){ c.checked = box.checked; });
+  onRowCheck();
+}
+function onRowCheck(){
+  const checked = document.querySelectorAll('.cand-chk:checked');
+  const bar = document.getElementById('bulk-bar');
+  if(checked.length>0){
+    bar.classList.remove('hidden');
+    document.getElementById('bulk-count').textContent = checked.length+' कामदार छानिए';
+    const sel = document.getElementById('bulk-stage');
+    if(!sel.dataset.filled){ STAGES.forEach(function(s){ const o=document.createElement('option'); o.value=s; o.textContent=s; sel.appendChild(o); }); sel.dataset.filled='1'; }
+  } else {
+    bar.classList.add('hidden');
+  }
+}
+function clearBulkSelection(){
+  document.querySelectorAll('.cand-chk').forEach(function(c){ c.checked=false; });
+  document.getElementById('cand-select-all').checked=false;
+  document.getElementById('bulk-bar').classList.add('hidden');
+}
+async function applyBulkStage(){
+  const checked = Array.from(document.querySelectorAll('.cand-chk:checked')).map(function(c){ return c.dataset.passport; });
+  const stage = document.getElementById('bulk-stage').value;
+  if(!checked.length || !stage) return;
+  if(!confirm(checked.length+' कामदारको stage "'+stage+'" मा बदल्ने हो?')) return;
+  const r = await call('bulkStage', {passports:checked, stage:stage});
+  if(r.ok){
+    let msg = '✅ '+r.updated+' कामदार अपडेट भयो।';
+    if(r.skipped && r.skipped.length) msg += '\n⚠️ '+r.skipped.length+' वटा skip भयो (lock वा भेटिएन)।';
+    alert(msg);
+    clearBulkSelection();
+    await refresh();
+  } else alert('भएन: '+(r.error||'?'));
+}
+
+function renderAcc(){
+  if(ROLE!=='admin'&&ROLE!=='accounts') return;
+  const q=(document.getElementById('acc-search').value||'').toLowerCase();
+  const rows=DATA.filter(function(c){ return !q||(c.name||'').toLowerCase().includes(q)||(c.passport||'').toLowerCase().includes(q); });
+  document.getElementById('acc-body').innerHTML = rows.map(function(c){
+    const total=Number(c.totalAmount)||0, rec=Number(c.received)||0, bal=total-rec;
+    return '<tr><td><b>'+(c.name||'')+'</b><br><span class="note">'+(c.passport||'')+'</span></td>'+
+      '<td>'+(c.country||'-')+'</td><td>'+total.toLocaleString()+'</td><td>'+rec.toLocaleString()+'</td>'+
+      '<td style="font-weight:700;color:'+(bal>0?'var(--danger)':'var(--ok)')+'">'+bal.toLocaleString()+'</td>'+
+      '<td><button class="btn btn-sm btn-ghost" onclick="openEdit(\''+c.passport+'\')">खोल्नुहोस्</button></td></tr>';
+  }).join('') || '<tr><td colspan="6" style="text-align:center;color:var(--muted)">—</td></tr>';
+}
+
+// ============ Modal ============
+let editing = null;
+const DEPT_LABELS = {reception:'रिसेप्शन', documentation:'डकुमेन्टेशन', shram:'श्रम', accounts:'लेखा'};
+
+function openNew(){
+  editing = null;
+  document.getElementById('m-title').textContent='नयाँ कामदार';
+  ['passport','name','age','phone','referredby','country','company','lotno','profession','visano','total','received','paid','remarks'].forEach(function(k){ document.getElementById('m-'+k).value=''; });
+  document.getElementById('m-gender').value='Male';
+  document.getElementById('m-source').value='PRO';
+  document.getElementById('m-stage').value=STAGES[0];
+  document.getElementById('m-medical').value=''; document.getElementById('m-orientation').value='';
+  document.getElementById('m-passport').disabled=false;
+  document.getElementById('m-owner-badge').innerHTML='';
+  document.getElementById('fwd-box').classList.add('hidden');
+  document.getElementById('btn-reject').classList.add('hidden');
+  document.getElementById('docs-box').classList.add('hidden');
+  document.getElementById('hist-box').classList.add('hidden');
+  setFieldsDisabled(false);
+  applyModalPerms();
+  document.getElementById('m-steps').innerHTML=stageStepper(STAGES[0]);
+  document.getElementById('modal').classList.add('show');
+}
+function setFieldsDisabled(locked){
+  ['m-name','m-age','m-gender','m-phone','m-source','m-referredby','m-country','m-company','m-lotno','m-profession','m-stage','m-medical','m-orientation','m-visano','m-remarks'].forEach(function(id){
+    document.getElementById(id).disabled = locked;
+  });
+}
+function openEdit(pass){
+  const c = DATA.find(function(x){ return String(x.passport).toUpperCase()===String(pass).toUpperCase(); });
+  if(!c) return;
+  editing = c;
+  document.getElementById('m-title').textContent = c.name+' — विवरण';
+  document.getElementById('m-passport').value=c.passport; document.getElementById('m-passport').disabled=true;
+  document.getElementById('m-name').value=c.name||''; document.getElementById('m-age').value=c.age||'';
+  document.getElementById('m-gender').value=c.gender||'Male'; document.getElementById('m-phone').value=c.phone||'';
+  document.getElementById('m-source').value=c.source||'Direct'; document.getElementById('m-referredby').value=c.referredBy||'';
+  document.getElementById('m-country').value=c.country||''; document.getElementById('m-company').value=c.company||'';
+  document.getElementById('m-lotno').value=c.lotNo||''; document.getElementById('m-profession').value=c.demandProfession||'';
+  document.getElementById('m-stage').value=c.stage||STAGES[0];
+  document.getElementById('m-medical').value=c.medical||''; document.getElementById('m-orientation').value=c.orientation||'';
+  document.getElementById('m-visano').value=c.visaNo||'';
+  document.getElementById('m-total').value=c.totalAmount||''; document.getElementById('m-received').value=c.received||''; document.getElementById('m-paid').value=c.paid||'';
+  document.getElementById('m-remarks').value=c.remarks||'';
+
+  // 🔒 Lock: owner नमिले, edit गर्न नपाउने (admin/accounts बाहेक)
+  const owner = c.owner || 'reception';
+  const isOwner = (ROLE==='admin' || ROLE==='accounts' || owner===ROLE);
+  setFieldsDisabled(!isOwner);
+
+  let badge = '<b>हाल जिम्मामा:</b> '+(DEPT_LABELS[owner]||owner);
+  if(c.rejectFlag==='Yes'){
+    badge += '<br><span style="color:var(--danger);font-weight:700;">⚠️ Reject भएर फर्किएको — कारण: '+(c.rejectReason||'')+'</span>';
+  }
+  if(!isOwner) badge += '<br><span style="color:var(--warn)">🔒 यो कामदार अहिले तपाईंको विभागसँग छैन — हेर्न मात्र मिल्छ।</span>';
+  document.getElementById('m-owner-badge').innerHTML = badge;
+
+  // Forward/Reject — owner भएको बेला मात्र देखिने
+  if(isOwner && ROLE!=='pro'){
+    document.getElementById('fwd-box').classList.remove('hidden');
+    const sel = document.getElementById('fwd-dept'); sel.innerHTML='';
+    DEPTS.filter(function(d){ return d!==owner; }).forEach(function(d){
+      const o=document.createElement('option'); o.value=d; o.textContent=DEPT_LABELS[d]; sel.appendChild(o);
+    });
+    document.getElementById('btn-reject').classList.toggle('hidden', !c.forwardedBy);
+  } else {
+    document.getElementById('fwd-box').classList.add('hidden');
+    document.getElementById('btn-reject').classList.add('hidden');
+  }
+
+  applyModalPerms();
+  document.getElementById('m-steps').innerHTML=stageStepper(c.stage);
+  document.getElementById('docs-box').classList.remove('hidden');
+  document.getElementById('hist-box').classList.remove('hidden');
+  setupDocButtons(c, isOwner);
+  loadHistory(c.passport);
+  loadDocs(c.passport);
+  document.getElementById('modal').classList.add('show');
+}
+function applyModalPerms(){
+  // पैसा edit — accounts/admin मात्र
+  const money=(ROLE==='admin'||ROLE==='accounts');
+  document.getElementById('money-fields').style.display = money?'':'none';
+  // कागजात — documentation/shram/admin
+  const docs=(ROLE==='admin'||ROLE==='documentation'||ROLE==='shram'||ROLE==='reception');
+  document.getElementById('doc-fields').style.display = docs?'':'none';
+}
+function closeModal(){ document.getElementById('modal').classList.remove('show'); }
+
+// ============ कागजात (Documents) ============
+const DOC_CATEGORIES = ['Passport','Visa','English Employment Contract','Nepali Employment Contract','Certificate','Photo','Police Report','Medical Report','Insurance'];
+let uploadTargetPassport = null, uploadTargetCategory = null;
+
+function setupDocButtons(c, isOwner){
+  const box = document.getElementById('doc-buttons'); box.innerHTML='';
+  DOC_CATEGORIES.forEach(function(cat){
+    const b=document.createElement('button');
+    b.type='button'; b.className='btn btn-sm btn-ghost';
+    b.textContent='📤 '+cat;
+    b.disabled = !isOwner;
+    b.onclick=function(){ triggerUpload(c.passport, cat); };
+    box.appendChild(b);
+  });
+}
+function triggerUpload(passport, category){
+  uploadTargetPassport = passport; uploadTargetCategory = category;
+  document.getElementById('doc-file-input').click();
+}
+document.getElementById('doc-file-input').addEventListener('change', async function(e){
+  const file = e.target.files[0]; if(!file) return;
+  if(file.size > 8*1024*1024){ alert('फाइल धेरै ठूलो छ (8MB भन्दा सानो राख्नुहोस्)।'); e.target.value=''; return; }
+  const reader = new FileReader();
+  reader.onload = async function(ev){
+    const base64 = ev.target.result.split(',')[1];
+    document.getElementById('doc-list').innerHTML = '<span class="note">⏳ अपलोड हुँदैछ...</span>';
+    const r = await call('uploadDoc', {passport:uploadTargetPassport, category:uploadTargetCategory, filename:file.name, mimeType:file.type, base64Data:base64});
+    if(r.ok){ loadDocs(uploadTargetPassport); }
+    else alert('अपलोड भएन: '+(r.error||'?'));
+  };
+  reader.readAsDataURL(file);
+  e.target.value='';
+});
+async function loadDocs(passport){
+  const el = document.getElementById('doc-list');
+  el.innerHTML = '<span class="note">लोड हुँदैछ...</span>';
+  const r = await call('listDocs', {passport:passport});
+  if(!r.ok){ el.innerHTML = '<span class="note">कागजात लोड भएन।</span>'; return; }
+  if(!r.docs || !r.docs.length){ el.innerHTML='<span class="note">अझै कुनै कागजात अपलोड भएको छैन।</span>'; return; }
+  el.innerHTML = r.docs.map(function(d){ return '<div>📄 <a href="'+d.url+'" target="_blank">'+d.name+'</a></div>'; }).join('');
+}
+
+// ============ यात्रा (History) ============
+async function loadHistory(passport){
+  const el = document.getElementById('hist-list');
+  el.innerHTML = '<span class="note">लोड हुँदैछ...</span>';
+  const r = await call('history', {passport:passport});
+  if(!r.ok || !r.history || !r.history.length){ el.innerHTML='<span class="note">कुनै इतिहास छैन।</span>'; return; }
+  const rows = r.history.slice().reverse();
+  el.innerHTML = rows.map(function(h){
+    let icon = '📝'; if(h.action==='FORWARD') icon='➡️'; else if(h.action==='REJECT') icon='❌'; else if(h.action==='CREATE') icon='✨'; else if(h.action==='DOCUMENT') icon='📎'; else if(h.action==='STAGE') icon='🔄';
+    return '<div style="padding:5px 0;border-bottom:1px solid var(--line);">'+icon+' <b>'+h.detail+'</b><br><span style="font-size:11px;color:var(--muted);">'+h.user+' — '+h.time+'</span></div>';
+  }).join('');
+}
+
+async function doForward(){
+  if(!editing) return;
+  const toDept = document.getElementById('fwd-dept').value;
+  if(!toDept) return;
+  const r = await call('forward', {passport:editing.passport, toDept:toDept});
+  if(r.ok){ closeModal(); await refresh(); alert('✅ '+DEPT_LABELS[toDept]+' लाई पठाइयो।'); }
+  else alert('पठाउन सकिएन: '+(r.error||'?'));
+}
+async function doReject(){
+  if(!editing) return;
+  const reason = prompt('Reject गर्ने कारण लेख्नुहोस् (अनिवार्य):');
+  if(!reason || !reason.trim()){ alert('कारण अनिवार्य छ।'); return; }
+  const r = await call('reject', {passport:editing.passport, reason:reason.trim()});
+  if(r.ok){ closeModal(); await refresh(); alert('❌ फिर्ता पठाइयो।'); }
+  else alert('भएन: '+(r.error||'?'));
+}
+
+async function saveCand(){
+  const c = {
+    passport:document.getElementById('m-passport').value.trim(),
+    name:document.getElementById('m-name').value.trim(),
+    age:document.getElementById('m-age').value.trim(),
+    gender:document.getElementById('m-gender').value,
+    phone:document.getElementById('m-phone').value.trim(),
+    source:document.getElementById('m-source').value,
+    referredBy:document.getElementById('m-referredby').value.trim(),
+    country:document.getElementById('m-country').value.trim(),
+    company:document.getElementById('m-company').value.trim(),
+    lotNo:document.getElementById('m-lotno').value.trim(),
+    demandProfession:document.getElementById('m-profession').value.trim(),
+    stage:document.getElementById('m-stage').value,
+    medical:document.getElementById('m-medical').value,
+    orientation:document.getElementById('m-orientation').value,
+    visaNo:document.getElementById('m-visano').value.trim(),
+    totalAmount:document.getElementById('m-total').value.trim(),
+    received:document.getElementById('m-received').value.trim(),
+    paid:document.getElementById('m-paid').value.trim(),
+    remarks:document.getElementById('m-remarks').value.trim()
+  };
+  if(!c.passport||!c.name){ alert('पासपोर्ट र नाम अनिवार्य।'); return; }
+  const r = await call('save', {candidate:c});
+  if(r.ok){ closeModal(); await refresh(); }
+  else alert('सुरक्षित भएन: '+(r.error||'?'));
+}
+
+async function refresh(){
+  const r = await call('list');
+  if(r.ok){ DATA = unpack(r.rows); renderAll(); }
+}
+
+// ============ Users (admin) ============
+async function loadUsers(){
+  const r=await call('users');
+  if(r.ok){ document.getElementById('users-list').innerHTML = r.users.map(function(u){
+    return '<b>'+u.username+'</b> ('+u.role+')'+(u.proName?' — PRO: '+u.proName:'');
+  }).join('<br>'); }
+}
+async function addUser(){
+  const u={username:document.getElementById('nu-user').value.trim(), password:document.getElementById('nu-pass').value,
+    role:document.getElementById('nu-role').value, fullName:document.getElementById('nu-name').value.trim(),
+    proName:document.getElementById('nu-pro').value.trim()};
+  if(!u.username||!u.password){ alert('username र password चाहिन्छ।'); return; }
+  const r=await call('adduser',{u:u});
+  if(r.ok){ ['nu-user','nu-pass','nu-name','nu-pro'].forEach(function(k){document.getElementById(k).value='';}); loadUsers(); alert('✅ थपियो'); }
+  else alert('भएन: '+r.error);
+}
+</script>
+</body>
+</html>
