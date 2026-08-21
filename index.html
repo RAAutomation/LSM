@@ -143,7 +143,7 @@ body.role-documentation #tab-workers .main-grid, body.role-shram #tab-workers .m
   </div>
 
   <div class="dashboard-grid">
-    <div class="stat-card c-pre clickable-card" onclick="cardFilter('pre')" title="क्लिक गर्नुहोस् — यसै आ.व.को पूर्व स्वीकृति हेर्न"><h3>Pre-Permission</h3><div class="value" id="d-pre-total">०</div><div class="sub" id="d-pre-sub">M 0 | F 0 | Lot 0</div></div>
+    <div class="stat-card c-pre clickable-card hide-for-receptionist hide-for-documentation" onclick="cardFilter('pre')" title="क्लिक गर्नुहोस् — यसै आ.व.को पूर्व स्वीकृति हेर्न"><h3>Pre-Permission</h3><div class="value" id="d-pre-total">०</div><div class="sub" id="d-pre-sub">M 0 | F 0 | Lot 0</div></div>
     <div class="stat-card c-app clickable-card" onclick="cardFilter('approved')" title="क्लिक गर्नुहोस् — यसै आ.व. श्रम स्वीकृति लिएका हेर्न"><h3>Final Approval</h3><div class="value" id="d-approved">०</div><div class="sub" id="d-app-sub">M 0 | F 0</div></div>
     <div class="stat-card c-fly clickable-card" onclick="cardFilter('departed')" title="क्लिक गर्नुहोस् — यसै आ.व. उडेका हेर्न"><h3>✈ Departure</h3><div class="value" id="d-flown">०</div><div class="sub" id="d-flown-sub">This FY 0 | Previous FY 0</div></div>
     <div class="stat-card c-rem clickable-card" onclick="cardFilter('pending')" title="क्लिक गर्नुहोस् — उड्न बाँकी हेर्न"><h3>⏳ Departure Pending</h3><div class="value" id="d-remaining">०</div><div class="sub" id="d-rem-sub">of 0 approved this FY</div></div>
@@ -153,9 +153,9 @@ body.role-documentation #tab-workers .main-grid, body.role-shram #tab-workers .m
 
   <div class="tab-navigation">
     <button class="tab-btn active" onclick="switchTab(event,'tab-workers')">👷 Master Record</button>
-    <button class="tab-btn hide-for-shram" onclick="switchTab(event,'tab-leads')">🧲 Lead (माग)</button>
+    <button class="tab-btn hide-for-shram" onclick="switchTab(event,'tab-leads')">📇 Applicants (आवेदक)</button>
     <button class="tab-btn" id="alert-tab-btn" onclick="switchTab(event,'tab-alerts')">🔔 पूरा गर्नुपर्ने</button>
-    <button class="tab-btn hide-for-receptionist" onclick="switchTab(event,'tab-pre')">📋 Pre-Permission</button>
+    <button class="tab-btn hide-for-receptionist hide-for-documentation" onclick="switchTab(event,'tab-pre')">📋 Pre-Permission</button>
     <button class="tab-btn hide-for-receptionist" onclick="switchTab(event,'tab-report')">📊 Report</button>
     <button class="tab-btn hide-for-receptionist" onclick="switchTab(event,'tab-quota')">🎫 Quota Details</button>
   </div>
@@ -228,11 +228,11 @@ body.role-documentation #tab-workers .main-grid, body.role-shram #tab-workers .m
     </div>
   </div>
 
-  <!-- TAB LEADS: माग/Lead (श्रम स्वीकृति अघिको पहिलो चरण) -->
+  <!-- TAB APPLICANTS: आवेदक (श्रम स्वीकृति अघिको पहिलो चरण; code भित्र 'lead' नामबाटै चिनिन्छ) -->
   <div id="tab-leads" class="tab-content hide-for-shram">
     <div class="main-grid">
       <div class="card">
-        <div class="card-title">New Lead Entry</div>
+        <div class="card-title">New Applicant Entry</div>
         <form id="lead-form">
           <div class="form-group"><label>नाम *</label><input type="text" id="l-name" class="form-control" required></div>
           <div class="form-row">
@@ -262,11 +262,11 @@ body.role-documentation #tab-workers .main-grid, body.role-shram #tab-workers .m
             <div class="form-group"><label>नेपालमा सम्पर्क व्यक्तिको नाम, ठेगाना</label><input type="text" id="l-contact-addr" class="form-control"></div>
           </div>
           <div class="form-group"><label>कैफियत</label><input type="text" id="l-remarks" class="form-control"></div>
-          <button type="submit" class="btn">Lead दर्ता गर्नुहोस्</button>
+          <button type="submit" class="btn">आवेदक दर्ता गर्नुहोस्</button>
         </form>
       </div>
       <div class="card">
-        <div class="card-title">Lead सूची</div>
+        <div class="card-title">आवेदक सूची</div>
         <div style="display:flex;gap:10px;flex-wrap:wrap;">
           <input type="text" id="l-search" class="search-control" style="flex:1;min-width:220px;" placeholder="🔍 नाम, पासपोर्ट, देश, कम्पनी..." oninput="renderLeads()">
           <select id="l-status-filter" class="form-control" style="width:auto;min-width:160px;margin-bottom:15px;font-weight:600;" onchange="renderLeads()"></select>
@@ -289,7 +289,7 @@ body.role-documentation #tab-workers .main-grid, body.role-shram #tab-workers .m
   </div>
 
   <!-- TAB 2: PRE-APPROVAL -->
-  <div id="tab-pre" class="tab-content">
+  <div id="tab-pre" class="tab-content hide-for-receptionist hide-for-documentation">
     <div class="main-grid">
       <div class="card">
         <div class="card-title">नयाँ पूर्व स्वीकृति इन्ट्री</div>
@@ -404,7 +404,7 @@ body.role-documentation #tab-workers .main-grid, body.role-shram #tab-workers .m
 <!-- LEAD MODAL -->
 <div class="modal" id="l-modal">
   <div class="modal-content">
-    <div class="modal-header"><h2 id="l-modal-title">Lead विवरण</h2><span class="close-modal" onclick="closeLModal()">&times;</span></div>
+    <div class="modal-header"><h2 id="l-modal-title">आवेदक विवरण</h2><span class="close-modal" onclick="closeLModal()">&times;</span></div>
     <div class="edit-grid">
       <div class="form-group"><label>नाम</label><input type="text" id="le-name" class="form-control"></div>
       <div class="form-group"><label>पासपोर्ट</label><input type="text" id="le-passport" class="form-control"></div>
@@ -417,7 +417,7 @@ body.role-documentation #tab-workers .main-grid, body.role-shram #tab-workers .m
       <div class="form-group"><label>Demand Profession</label><input type="text" id="le-demandprof" class="form-control"></div>
       <div class="form-group"><label>Orientation</label><select id="le-orientation" class="form-control"><option value="">—</option><option>Yes</option><option>No</option></select></div>
       <div class="form-group"><label>Medical</label><select id="le-medical" class="form-control"><option value="">—</option><option>Yes</option><option>No</option></select></div>
-      <div class="form-group"><label>⚙️ Lead Status</label>
+      <div class="form-group"><label>⚙️ Applicant Status</label>
         <select id="le-status" class="form-control" style="font-weight:700;">
           <option value="Inquiry">Inquiry (माग सम्पर्क)</option>
           <option value="Processing">Processing (प्रक्रियामा)</option>
@@ -459,7 +459,7 @@ body.role-documentation #tab-workers .main-grid, body.role-shram #tab-workers .m
     </div>
     <div style="display:flex;gap:10px;">
       <button class="btn" style="background:var(--success);" onclick="savePre()">💾 सुरक्षित</button>
-      <button class="btn btn-danger admin-only" onclick="deletePre()">🗑️ मेटाउने</button>
+      <button class="btn btn-danger" onclick="deletePre()">🗑️ मेटाउने</button>
     </div>
   </div>
 </div>
@@ -468,7 +468,7 @@ body.role-documentation #tab-workers .main-grid, body.role-shram #tab-workers .m
 // ═══════════════════════════════════════════════════════
 // ⚙️ GITHUB मा upload गर्नुअघि आफ्नो Web App URL यहाँ राख्नुहोस्:
 // ═══════════════════════════════════════════════════════
-const FIXED_API_URL = 'https://script.google.com/macros/s/AKfycbw-up42XWvHERa0UkCnl7kWt8c5tfEcZYPTrb7X1izp4-zCzhoIV2Cv9mYwO2HgmwNYiQ/exec';
+const FIXED_API_URL = 'https://script.google.com/macros/s/AKfycbxktyI5H_pZzbwAZt-r3cSstMf_2oufYdI_8ekltu78zYGRC6TPIth58nhOHWNUgAbSug/exec';
 const COMPANY_NAME = 'Link Star Manpower Services Pvt. Ltd.';
 const COMPANY_LICENSE = '1025/068/069';
 
@@ -551,9 +551,9 @@ const STATUS_BADGE = {Entry:'s-entry', Upload:'s-upload', Submitted:'s-submitted
 function statusBadge(s){ return `<span class="badge ${STATUS_BADGE[s]||'s-entry'}">${s||'Entry'}</span>`; }
 
 // ================= भूमिका (ROLE) अनुसार workflow अनुमति =================
-// receptionist/documentation → कामदार/Lead दर्ता + Lead को Inquiry/Processing/Ready स्थिति राख्ने,
-//   तर Worker को Status/स्वीकृति मिति बदल्न पाउँदैनन् (खाली array = अनुमति छैन)
-// shram (श्रम प्रतिनिधि) → Worker को Status/स्वीकृति मिति एक्लै व्यवस्थापन गर्छ (जुनसुकैबाट); Lead भने देख्दैन
+// receptionist/documentation → कामदार/आवेदक (Applicant) दर्ता + आवेदकको Inquiry/Processing/Ready
+//   स्थिति राख्ने, तर Worker को Status/स्वीकृति मिति बदल्न पाउँदैनन् (खाली array = अनुमति छैन)
+// shram (श्रम प्रतिनिधि) → Worker को Status/स्वीकृति मिति एक्लै व्यवस्थापन गर्छ (जुनसुकैबाट); आवेदक (Applicant) भने देख्दैन
 // admin → सबै
 const ROLE_STATUS_MAP = {
   receptionist: [],
@@ -644,7 +644,7 @@ async function manageUsers(){
     const fn=prompt('पूरा नाम:'); if(!fn) return;
     const nu=prompt('Username:'); if(!nu) return;
     const np=prompt('Password:'); if(!np) return;
-    const role=prompt('भूमिका छान्नुहोस्:\n\nreceptionist = कामदार/Lead दर्ता, Lead स्थिति राख्ने (Worker Status बदल्न पाउँदैन)\ndocumentation = receptionist जस्तै Lead management (Worker Status बदल्न पाउँदैन)\nshram = श्रम प्रतिनिधि — Worker को Status/स्वीकृति मिति एक्लै व्यवस्थापन गर्छ; Lead देख्दैन\nadmin = सबै अधिकार','receptionist'); if(!role) return;
+    const role=prompt('भूमिका छान्नुहोस्:\n\nreceptionist = कामदार/आवेदक दर्ता, आवेदक स्थिति राख्ने (Worker Status बदल्न पाउँदैन, Pre-Permission मा अनुमति छैन)\ndocumentation = receptionist जस्तै आवेदक management (Worker Status बदल्न पाउँदैन, Pre-Permission मा अनुमति छैन)\nshram = श्रम प्रतिनिधि — Worker र Pre-Permission मा admin जत्तिकै पूर्ण अधिकार; आवेदक (Applicant) प्रणाली देख्दैन\nadmin = सबै अधिकार','receptionist'); if(!role) return;
     const r=await api('adduser',{newUsername:nu.trim(),newPassword:np,newRole:role.trim().toLowerCase(),newFullName:fn.trim()},null,true);
     if(r.ok) alert('थपियो।'); else if(r.error==='DUPLICATE_USER') alert('Username पहिल्यै छ।');
   } else if(c.trim().toLowerCase()==='remove'){
@@ -681,7 +681,7 @@ function unpack(cols, rows, isWorker){
   }
   return out;
 }
-// Lead (माग) — receptionist/documentation ले चलाउँछन्, shram लाई server ले नै पठाउँदैन
+// आवेदक (Applicant, code भित्र 'lead' नामबाटै) — receptionist/documentation ले चलाउँछन्, shram लाई server ले नै पठाउँदैन
 const LEAD_VALID_ST = ['Inquiry','Processing','Ready','Cancel'];
 function unpackLeads(cols, rows){
   const out = new Array(rows.length);
@@ -837,10 +837,10 @@ if(leadForm) leadForm.addEventListener('submit', async function(e){
     leadStatus:'Inquiry'
   };
   const r = await api('addlead', { lead: l }, null, true);
-  if(r.ok){ leads.push(r.lead); this.reset(); renderAll(); alert('✅ Lead दर्ता भयो।'); }
+  if(r.ok){ leads.push(r.lead); this.reset(); renderAll(); alert('✅ आवेदक दर्ता भयो।'); }
   else if(r.error==='DUPLICATE_PASSPORT') alert('⛔ यो पासपोर्ट पहिल्यै दर्ता छ!\nनाम: '+(r.workerName||'')+'\nStatus: '+(r.status||''));
   else if(r.error==='INVALID_PASSPORT') alert(PP_ERROR);
-  else if(r.error==='FORBIDDEN') alert('⛔ तपाईंलाई Lead थप्ने अनुमति छैन।');
+  else if(r.error==='FORBIDDEN') alert('⛔ तपाईंलाई आवेदक थप्ने अनुमति छैन।');
 });
 
 ['w-passport','e-passport','l-passport','le-passport'].forEach(id=>{
@@ -1124,7 +1124,14 @@ function openWModal(id){
   document.getElementById('e-nepal-addr').value = w.nepalAddress||'';
   document.getElementById('e-contact-addr').value = w.contactAddress||'';
   document.getElementById('e-remarks').value = w.remarks||'';
-  document.getElementById('w-modal-meta').textContent = 'दर्ता: ' + (w.createdAt||'');
+  // Worker Approved भइसकेको छ भने receptionist/documentation लाई ४ वटा follow-up field
+  // (उडान मिति/विदेश पुगेको मिति/नेपाल ठेगाना/सम्पर्क व्यक्ति) बाहेक अरु सबै field lock गर्ने
+  const limitedRole = session && (session.role==='receptionist' || session.role==='documentation');
+  const postApprovalLocked = !!(limitedRole && w.status==='Approved');
+  const LOCK_IDS = ['e-name','e-passport','e-age','e-gender','e-lotno','e-newsdate','e-issuedate','e-visano','e-country','e-company','e-visaprof','e-demandprof','e-orientation','e-medical','e-remarks'];
+  LOCK_IDS.forEach(fid=>{ const el=document.getElementById(fid); if(el) el.disabled = postApprovalLocked; });
+  document.getElementById('w-modal-meta').textContent = 'दर्ता: ' + (w.createdAt||'') +
+    (postApprovalLocked ? ' | 🔒 Approved भइसकेकाले नाम/पासपोर्ट/देश-कम्पनी आदि अब सम्पादन गर्न मिल्दैन — उडान मिति/विदेश पुगेको मिति/नेपाल ठेगाना/सम्पर्क व्यक्ति मात्र भर्न सकिन्छ।' : '');
   loadHistory(id);
   document.getElementById('w-modal').style.display='flex';
 }
@@ -1221,13 +1228,13 @@ function renderLeads(){
       <td>${l.country}<br><small>${l.company}</small></td>
       <td><span class="badge ${LEAD_STATUS_BADGE[l.leadStatus]||'s-entry'}">${l.leadStatus}</span>${l.convertedWorkerId?'<br><small style="color:#7c3aed;">✅ Worker मा सारियो</small>':''}</td>
       <td><button class="btn btn-sm" onclick="openLModal('${l.id}')">View</button></td>
-    </tr>`).join('') || '<tr><td colspan="4" style="text-align:center;color:var(--muted)">कुनै Lead छैन</td></tr>';
+    </tr>`).join('') || '<tr><td colspan="4" style="text-align:center;color:var(--muted)">कुनै आवेदक छैन</td></tr>';
 }
 function openLModal(id){
   editingLId = id;
   const l = leads.find(x=>x.id===id);
   if(!l) return;
-  document.getElementById('l-modal-title').textContent = l.name + ' — Lead विवरण / संशोधन';
+  document.getElementById('l-modal-title').textContent = l.name + ' — आवेदक विवरण / संशोधन';
   document.getElementById('le-name').value = l.name;
   document.getElementById('le-passport').value = l.passport;
   document.getElementById('le-age').value = l.age||'';
@@ -1267,7 +1274,7 @@ async function loadLeadHistory(id){
 function saveLead(){
   const l = leads.find(x=>x.id===editingLId);
   if(!l) return;
-  if(l.convertedWorkerId){ alert('⚠️ यो Lead पहिल्यै Worker मा सारिएको छ, अब संशोधन गर्न मिल्दैन।'); return; }
+  if(l.convertedWorkerId){ alert('⚠️ यो आवेदक पहिल्यै Worker मा सारिएको छ, अब संशोधन गर्न मिल्दैन।'); return; }
   const passport = cleanPassport(document.getElementById('le-passport').value);
   if(!validPassport(passport)){ alert(PP_ERROR); return; }
   const updated = {
@@ -1307,20 +1314,22 @@ async function convertLead(){
     renderAll(); closeLModal();
     alert('✅ Worker मा सारियो (Status: Upload)। श्रम प्रतिनिधिलाई notice गयो।');
   } else if(r.error==='DUPLICATE_PASSPORT'){ alert('⛔ यो पासपोर्ट पहिल्यै Worker मा दर्ता छ!\nनाम: '+(r.workerName||'')+'\nStatus: '+(r.status||'')); refreshData(false); }
-  else if(r.error==='NOT_READY'){ alert('⚠️ Lead अझै "Ready" चरणमा पुगेको छैन।'); }
+  else if(r.error==='NOT_READY'){ alert('⚠️ आवेदक अझै "Ready" चरणमा पुगेको छैन।'); }
   else if(r.error==='ALREADY_CONVERTED'){ alert('पहिल्यै Worker मा सारिएको छ।'); refreshData(false); }
   else { alert('⚠️ भएन: '+(r.error||'')); }
 }
 async function deleteLead(){
   if(!isAdmin()) return;
-  if(!confirm('यो Lead मेटाउने हो?')) return;
+  if(!confirm('यो आवेदक मेटाउने हो?')) return;
   const r = await api('deletelead', { id: editingLId }, null, true);
   if(r.ok){ leads = leads.filter(x=>x.id!==editingLId); closeLModal(); renderAll(); }
 }
 
 // ================= PRE-APPROVAL =================
+function canManagePre(){ return !session || (session.role!=='receptionist' && session.role!=='documentation'); }
 document.getElementById('pre-form').addEventListener('submit', async function(e){
   e.preventDefault();
+  if(!canManagePre()){ alert('⛔ Pre-Permission मा तपाईंलाई अनुमति छैन।'); return; }
   const positions = gatherPositions();
   if(positions.length===0){ alert('कम्तीमा एउटा पद थप्नुहोस्।'); return; }
   let totM=0, totF=0;
@@ -1461,6 +1470,7 @@ function openPModal(id){
 }
 function closePModal(){ document.getElementById('p-modal').style.display='none'; editingPId=null; }
 function savePre(){
+  if(!canManagePre()){ alert('⛔ Pre-Permission मा तपाईंलाई अनुमति छैन।'); return; }
   const p = pres.find(x=>x.id===editingPId);
   if(!p) return;
   const updated = {
@@ -1484,7 +1494,7 @@ function savePre(){
   });
 }
 async function deletePre(){
-  if(!isAdmin()) return;
+  if(!canManagePre()){ alert('⛔ Pre-Permission मेटाउन तपाईंलाई अनुमति छैन।'); return; }
   if(!confirm('यो पूर्व स्वीकृति मेटाउने हो?')) return;
   const r = await api('deletepre', { id: editingPId }, null, true);
   if(r.ok){ pres = pres.filter(x=>x.id!==editingPId); closePModal(); renderAll(); }
@@ -1635,6 +1645,7 @@ function renderSchedule6(list, subtitle, periodLabel, mode){
     return `<tr>
       <td>${i+1}</td>
       <td style="text-align:left;">${w.name||''}</td>
+      <td>${w.passport||''}</td>
       <td>${w.nepalAddress||''}</td>
       <td>${w.country||''}</td>
       <td>${w.departDate||''}</td>
@@ -1647,7 +1658,7 @@ function renderSchedule6(list, subtitle, periodLabel, mode){
       <td>${(info.cost!==undefined && info.cost!=='') ? info.cost : ''}</td>
       <td>${w.remarks||''}</td>
     </tr>`;
-  }).join('') || '<tr><td colspan="13">यस अवधिमा कामदार छैनन्।</td></tr>';
+  }).join('') || '<tr><td colspan="14">यस अवधिमा कामदार छैनन्।</td></tr>';
 
   const win = window.open('', '_blank');
   if(!win){ alert('Popup allow गर्नुहोस्।'); return; }
@@ -1668,7 +1679,7 @@ function renderSchedule6(list, subtitle, periodLabel, mode){
     <div class="company">${periodLabel}&nbsp;&nbsp;&nbsp;&nbsp;जम्मा कामदार : ${list.length}</div>
     <table>
       <thead><tr>
-        <th>सि.नं</th><th>कामदारको नाम</th><th>नेपालको ठेगाना</th><th>विदेशको ठेगाना</th>
+        <th>सि.नं</th><th>कामदारको नाम</th><th>राहदानी नं</th><th>नेपालको ठेगाना</th><th>विदेशको ठेगाना</th>
         <th>नेपालबाट प्रस्थान मिति</th><th>विदेश पुगेको मिति</th><th>रोजगारदाता संस्थाको नाम</th>
         <th>विदेशमा गर्ने काम</th><th>मासिक तलब र सुविधा</th><th>करार समाप्त हुने मिति</th>
         <th>${mode==='auditor' ? 'श्रम स्वीकृति लिएको मिति' : 'नेपालमा सम्पर्क व्यक्तिको नाम ठेगाना'}</th><th>लागत खर्च</th><th>कैफियत</th>
